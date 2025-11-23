@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Van Gogh Studio | Ultimate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Satisfy fontu eklendi (Hem el yazısı gibi hem okunaklı) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&family=Satisfy&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #fcd34d; /* Star Yellow */
@@ -36,27 +37,44 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100;
             background: rgba(0, 0, 0, 0.6); 
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(5px);
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
+        /* YENİLENEN YAZI STİLİ - BEYAZ */
+        .poetic-text {
+            font-family: 'Satisfy', cursive; 
+            font-size: 2.2rem;
+            color: #ffffff; /* BEYAZ RENK */
+            opacity: 1;
+            margin-bottom: 0px; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+            transform: none; 
+            font-weight: 400;
+        }
+
+        /* ANA BAŞLIK - SARI */
         .hero-title {
-            font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--primary);
-            text-shadow: 0 0 40px rgba(252, 211, 77, 0.5); margin: 0;
+            font-family: 'Playfair Display', serif; font-size: 5rem; 
+            color: var(--primary); /* SARI RENK */
+            text-shadow: 0 0 40px rgba(252, 211, 77, 0.4); margin: 0;
             text-align: center; letter-spacing: 2px;
+            line-height: 1.2;
         }
 
         .hero-subtitle {
-            font-size: 1.1rem; color: #fff; margin-top: 10px; margin-bottom: 3rem; 
-            letter-spacing: 4px; text-transform: uppercase; opacity: 0.9;
+            font-size: 1.1rem; color: #aaa; margin-top: 10px; margin-bottom: 3rem; 
+            letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;
         }
 
+        /* START BUTTON */
         #start-btn {
-            width: auto; min-width: 180px;
-            padding: 14px 40px; font-size: 0.95rem; font-weight: 600;
-            background: rgba(252, 211, 77, 0.15); border: 1px solid var(--primary);
+            width: auto; min-width: 160px;
+            padding: 14px 45px; font-size: 0.9rem; font-weight: 600;
+            background: rgba(252, 211, 77, 0.1); border: 1px solid var(--primary);
             color: var(--primary); border-radius: 50px; cursor: pointer;
-            backdrop-filter: blur(10px); transition: all 0.3s ease;
+            backdrop-filter: blur(5px); transition: all 0.3s ease;
             text-transform: uppercase; letter-spacing: 1.5px;
         }
         #start-btn:hover {
@@ -64,7 +82,7 @@
             box-shadow: 0 0 30px rgba(252, 211, 77, 0.6); transform: scale(1.05);
         }
 
-        /* MAIN UI */
+        /* UI */
         .app-ui { opacity: 0; visibility: hidden; transition: opacity 0.5s ease 0.5s; position: fixed; z-index: 50; }
 
         #sidebar {
@@ -128,6 +146,27 @@
         .btn-paint.active { background: #ff0055; border-color: #ff0055; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
         .btn-ai { border: 1px solid #a855f7; color: #a855f7; background: rgba(168,85,247,0.05); }
         .btn-ai:hover { background: #a855f7; color: #fff; }
+        
+        /* Audio & Auto buttons */
+        .btn-audio.active { 
+            background: #10b981; border-color: #10b981; color: #fff; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.05s; 
+        }
+        .btn-auto.active {
+             background: #f97316; border-color: #f97316; color: #fff;
+             box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Video Record Button */
+        .btn-video { border-color: #ef4444; color: #ef4444; }
+        .btn-video:hover { background: #ef4444; color: #fff; }
+        .btn-video.recording { 
+            background: #ef4444; color: #fff; 
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         input[type="text"], input[type="password"] {
             width: 100%; padding: 10px; background: rgba(0,0,0,0.4); 
@@ -136,11 +175,24 @@
         }
         input:focus { outline: none; border-color: var(--primary); }
 
+        /* Sliders */
         .slider-group { margin-bottom: 15px; }
         .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
         input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
         input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
+        
+        /* Shape Selector */
+        .shape-btn { font-size: 1.2rem !important; padding: 6px !important; }
+
+        /* Glow Switch */
+        .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         #loading {
             position: fixed; bottom: 30px; left: 30px;
@@ -163,6 +215,7 @@
             z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
 
+        /* Gemini Modal */
         #gemini-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95);
@@ -193,6 +246,8 @@
 
     <!-- INTRO SCREEN -->
     <div id="intro-layer">
+        <!-- YENİLENEN YAZILAR -->
+        <div class="poetic-text">The harmonious dance of colors</div>
         <h1 class="hero-title">Van Gogh Studio</h1>
         <div class="hero-subtitle">Interactive Digital Art</div>
         <button id="start-btn" onclick="startApp()">ENTER STUDIO</button>
@@ -224,22 +279,49 @@
                     <button class="col active" id="btn-view" onclick="setTool('view')">👁️ View</button>
                     <button class="col btn-paint" id="btn-paint" onclick="setTool('paint')">🖌️ Brush</button>
                 </div>
+                
+                <!-- Audio & Auto -->
+                <div class="row">
+                    <button class="col btn-auto" onclick="toggleAutoPilot()" id="btn-auto">🤖 Auto</button>
+                    <button class="col btn-audio" onclick="toggleAudio()" id="btn-audio">🎵 Audio</button>
+                </div>
+
                 <div class="row">
                     <button class="col" onclick="undoAction()" id="btn-undo" style="opacity:0.5">↩️ Undo</button>
-                    <button class="col" onclick="resetFlow()">❄️ Freeze</button>
+                    <button class="col" onclick="resetFlow()">❄️ Reset All</button>
                 </div>
             </div>
 
             <!-- 2. SETTINGS -->
             <div class="section">
-                <div class="section-title">Simulation</div>
+                <div class="section-title">Simulation & Style</div>
+                
+                <!-- Shape Selector -->
+                <div class="slider-group">
+                    <div class="slider-label"><span>Particle Shape</span></div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="col shape-btn active" onclick="setShape('square', this)">■</button>
+                        <button class="col shape-btn" onclick="setShape('circle', this)">●</button>
+                        <button class="col shape-btn" onclick="setShape('line', this)">/</button>
+                    </div>
+                </div>
+
+                <!-- Neon Glow Toggle -->
+                <div class="switch-container">
+                    <span>✨ Neon Mode</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="glow-switch" onchange="toggleGlow()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div class="slider-group">
                     <div class="slider-label"><span>Brush Size</span><span id="val-radius">70px</span></div>
                     <input type="range" id="radius-slider" min="20" max="200" value="70">
                 </div>
                 <div class="slider-group">
                     <div class="slider-label"><span>Flow Speed</span><span id="val-speed">5</span></div>
-                    <input type="range" id="speed-slider" min="1" max="20" value="5">
+                    <input type="range" id="speed-slider" min="1" max="10" value="5">
                 </div>
                 <div class="slider-group">
                     <div class="slider-label"><span>Density</span><span id="val-density">Medium</span></div>
@@ -269,10 +351,9 @@
             <div class="section">
                 <div class="section-title" style="color: var(--ai-purple);">Gemini AI Tools</div>
                 
-                <!-- Upload & Reset -->
                 <div class="row">
                     <button class="col" onclick="document.getElementById('file-input').click()">📂 Upload</button>
-                    <button class="col" onclick="resetOriginal()">↺ Reset</button>
+                    <button class="col" onclick="shareSettings()">🔗 Share</button>
                 </div>
                 <input type="file" id="file-input" accept="image/*" style="display:none">
 
@@ -282,10 +363,8 @@
                     <input type="password" id="api-key" placeholder="Paste Gemini API Key Here" style="margin-top:10px;">
                     <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.7rem; color:var(--accent); text-decoration:none; display:block; margin-bottom:15px;">🔑 Get API Key Here</a>
                     
-                    <!-- AI Feature 1: Analyze -->
                     <button class="btn-ai" onclick="analyzeArt()" style="margin-bottom:10px;">👁️ Analyze My Art</button>
 
-                    <!-- AI Feature 2: Generate SVG -->
                     <div style="display:flex; gap:5px; align-items:center;">
                         <input type="text" id="ai-prompt" placeholder="Prompt: A cat in space..." style="margin-bottom:0;">
                         <button class="btn-ai" onclick="enhancePrompt()" title="Magic Prompt" style="width:40px;">🪄</button>
@@ -294,7 +373,11 @@
                 </details>
             </div>
 
-            <button class="primary" onclick="saveSnapshot()">📸 Download Artwork</button>
+            <!-- VIDEO EXPORT -->
+            <div class="row">
+                <button class="col primary" onclick="saveSnapshot()">📸 Snapshot</button>
+                <button class="col btn-video" onclick="recordVideo()" id="btn-video">🎥 Record (5s)</button>
+            </div>
             <div style="height: 20px;"></div> 
         </div>
     </div>
@@ -313,6 +396,7 @@
     const modal = document.getElementById('gemini-modal');
     const modalContent = document.getElementById('gemini-content');
     const promptInput = document.getElementById('ai-prompt');
+    const audioBtn = document.getElementById('btn-audio');
     
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -327,33 +411,52 @@
     let isMouseDown = false;
     let isDrawingDirty = false; 
     let particleDensity = 6; 
+    let particleShape = 'square'; 
     let animationId; 
+    let time = 0;
+    
+    let isNeonMode = false; 
     
     let renderProps = { x: 0, y: 0, w: 0, h: 0 };
 
-    // HISTORY STACK
+    // FEATURES
+    let isAutoPilot = false;
+    let isAudioActive = false;
+    let audioContext, analyser, dataArray;
+    let audioLevel = 0;
+
+    // HISTORY
     let historyStack = []; 
     const MAX_HISTORY = 20;
-    
-    // TEMPORARY SNAPSHOT FOR UNDO
     let tempSnapshot = null;
 
-    let mouse = { x: 0, y: 0, radius: 70, lastX: 0, lastY: 0 };
+    let mouse = { x: 0, y: 0, radius: 70, lastX: 0, lastY: 0, vx: 0, vy: 0 };
     let currentPalette = null; 
     let userApiKey = localStorage.getItem('gemini_api_key') || "";
 
-    // Init API Key field
     if(userApiKey && document.getElementById('api-key')) {
         document.getElementById('api-key').value = userApiKey;
     }
 
     function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedDensity = urlParams.get('d');
+        if(sharedDensity) particleDensity = parseInt(sharedDensity);
+
         sourceImage.crossOrigin = "Anonymous";
         sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
         
         sourceImage.onload = () => {
             processImage();
             if (!animationId) animate();
+
+            const sharedFilter = urlParams.get('f');
+            if(sharedFilter) {
+                setTimeout(() => {
+                    document.getElementById('filter-input').value = sharedFilter;
+                    applySmartFilter();
+                }, 500);
+            }
         };
         
         sourceImage.onerror = () => {
@@ -380,15 +483,62 @@
         }
     }
 
+    // --- FEATURE TOGGLES ---
+    function toggleAutoPilot() {
+        isAutoPilot = !isAutoPilot;
+        document.getElementById('btn-auto').classList.toggle('active', isAutoPilot);
+    }
+
+    function toggleGlow() {
+        isNeonMode = document.getElementById('glow-switch').checked;
+    }
+
+    async function toggleAudio() {
+        if(isAudioActive) {
+            isAudioActive = false;
+            audioBtn.classList.remove('active');
+            audioBtn.style.transform = "scale(1)";
+            return;
+        }
+        
+        try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = audioContext.createMediaStreamSource(stream);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            isAudioActive = true;
+            audioBtn.classList.add('active');
+        } catch(e) {
+            alert("Microphone access denied.");
+        }
+    }
+
+    function shareSettings() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('d', particleDensity);
+        const filterVal = document.getElementById('filter-input').value;
+        if(filterVal) url.searchParams.set('f', filterVal);
+        
+        navigator.clipboard.writeText(url.toString()).then(() => {
+            showNotification("Link Copied!");
+        });
+    }
+
     // --- AI FEATURES ---
     async function analyzeArt() {
         const inputKey = document.getElementById('api-key').value.trim();
         if(inputKey) userApiKey = inputKey;
         if(!userApiKey) { alert("Please enter API Key first."); return; }
-        
         loadingEl.style.display = 'block';
         loadingEl.innerText = "ANALYZING ART...";
-        
         try {
             const base64Image = canvas.toDataURL("image/jpeg", 0.5).split(',')[1];
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
@@ -446,7 +596,7 @@
             const data = await response.json();
             let svg = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if(svg) {
-                pushToHistory(); // Save before overwriting image
+                saveState(); 
                 const svgStart = svg.indexOf('<svg');
                 const svgEnd = svg.lastIndexOf('</svg>') + 6;
                 if (svgStart !== -1 && svgEnd !== -1) {
@@ -463,7 +613,6 @@
     function processImage() {
         if (!sourceImage.width) return;
 
-        // COVER LOGIC (Reverted as per request)
         const scale = Math.max(canvas.width / sourceImage.width, canvas.height / sourceImage.height);
         renderProps.w = sourceImage.width * scale;
         renderProps.h = sourceImage.height * scale;
@@ -477,10 +626,8 @@
         initFlowField();
         initParticles(pixels);
         
-        // Clear history for new image
         historyStack = []; 
-        // Do NOT save initial state as step 1. Step 0 is implicit.
-        // We will save state before any change.
+        saveState(); 
     }
 
     function initFlowField() {
@@ -512,6 +659,7 @@
         }
     }
 
+    // ** PHYSICS **
     class Particle {
         constructor(x, y, color, brightness) {
             this.originX = x;
@@ -525,6 +673,7 @@
             this.vx = 0; 
             this.vy = 0;
             this.speedMod = Math.random() * 0.6 + 0.4;
+            this.angle = 0; // Fix initial jitter
         }
 
         update(speedFactor) {
@@ -540,13 +689,40 @@
                 hasFlow = true;
             }
 
-            if (!hasFlow) {
+            // Auto Pilot
+            if(isAutoPilot) {
+                const t = time * 0.001;
+                const noiseX = Math.sin(this.y * 0.005 + t) * 0.03;
+                const noiseY = Math.cos(this.x * 0.005 + t) * 0.03;
+                this.vx += noiseX;
+                this.vy += noiseY;
+            }
+
+            // AUDIO: WAVE MOTION
+            if(isAudioActive) {
+                if (audioLevel > 5) {
+                     const wave = Math.sin(this.y * 0.05 + time * 0.1) * (audioLevel / 200);
+                     this.vx += wave * 0.5; 
+                     if(hasFlow) {
+                         this.vx *= (1 + audioLevel/100);
+                         this.vy *= (1 + audioLevel/100);
+                     }
+                } else {
+                    // Silence = Freeze
+                    this.vx *= 0.5; 
+                    this.vy *= 0.5;
+                    this.x += (this.originX - this.x) * 0.1;
+                    this.y += (this.originY - this.y) * 0.1;
+                }
+            }
+
+            if (!hasFlow && !isAutoPilot && !isAudioActive) {
                 const dx = this.originX - this.x;
                 const dy = this.originY - this.y;
-                this.vx += dx * 0.08;
-                this.vy += dy * 0.08;
-                this.vx *= 0.7; 
-                this.vy *= 0.7;
+                this.vx += dx * 0.05;
+                this.vy += dy * 0.05;
+                this.vx *= 0.8; 
+                this.vy *= 0.8;
             } else {
                 const maxSpeed = speedFactor * this.speedMod;
                 this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
@@ -566,29 +742,80 @@
                 }
             }
 
+            // Fix jitter when very slow
+            if(Math.abs(this.vx) < 0.01) this.vx = 0;
+            if(Math.abs(this.vy) < 0.01) this.vy = 0;
+
             this.x += this.vx;
             this.y += this.vy;
 
-            if (hasFlow) {
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
+            const distHome = Math.sqrt(Math.pow(this.x - this.originX, 2) + Math.pow(this.y - this.originY, 2));
+            if ((hasFlow || isAutoPilot || (isAudioActive && audioLevel > 5)) && distHome > 30) {
+                 this.x = this.originX;
+                 this.y = this.originY;
+            }
+            
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                this.x = this.originX; this.y = this.originY;
+            }
+            
+            // Only update angle if moving
+            if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
+                this.angle = Math.atan2(this.vy, this.vx);
             }
         }
 
         draw() {
+            // TRUE NEON (ShadowBlur)
+            if(isNeonMode) {
+                ctx.shadowBlur = 10; 
+                ctx.shadowColor = this.color; 
+            } else {
+                ctx.shadowBlur = 0;
+            }
+            
+            ctx.globalCompositeOperation = 'source-over';
             ctx.fillStyle = this.color;
-            ctx.fillRect(this.x, this.y, this.baseSize, this.baseSize);
+            ctx.strokeStyle = this.color;
+            let size = this.baseSize;
+
+            if(particleShape === 'square') {
+                ctx.fillRect(this.x, this.y, size, size);
+            } else if (particleShape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, size/2, 0, Math.PI*2);
+                ctx.fill();
+            } else if (particleShape === 'line') {
+                ctx.lineWidth = size/2;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                const lineLen = size * 2;
+                ctx.lineTo(this.x + Math.cos(this.angle)*lineLen, this.y + Math.sin(this.angle)*lineLen);
+                ctx.stroke();
+            }
+            
+            if(isNeonMode) ctx.shadowBlur = 0;
         }
     }
 
     function animate() {
         animationId = requestAnimationFrame(animate);
+        time++; 
         const speed = parseInt(document.getElementById('speed-slider').value);
         
+        if(isAudioActive && analyser) {
+            analyser.getByteFrequencyData(dataArray);
+            const avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
+            const scale = 1 + (avg / 500);
+            audioBtn.style.transform = `scale(${scale})`;
+            audioLevel = avg;
+        } else {
+            audioLevel = 0;
+        }
+
         if (sourceImage.complete && sourceImage.naturalWidth !== 0) {
-            ctx.globalAlpha = 0.05; 
+            // Darker fade for Neon Mode
+            ctx.globalAlpha = isNeonMode ? 0.4 : 0.15; 
             ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
             ctx.globalAlpha = 1.0; 
         } else {
@@ -630,27 +857,20 @@
         }
     }
 
-    // --- SMART UNDO SYSTEM ---
+    // --- UNDO SYSTEM ---
     function createSnapshot() {
-        const particleStates = particles.map(p => ({
-            x: p.x, y: p.y, vx: p.vx, vy: p.vy, c: p.color
-        }));
-        
         return {
             flow: [...flowField],
-            particles: particleStates,
             palette: currentPalette ? [...currentPalette] : null
         };
     }
 
-    function pushToHistory() {
+    function saveState() {
         if(historyStack.length > MAX_HISTORY) historyStack.shift();
-        
         if(tempSnapshot) {
             historyStack.push(tempSnapshot);
             tempSnapshot = null;
         } else {
-            // Direct save (e.g. Filters, AI)
             historyStack.push(createSnapshot());
         }
         updateUndoBtn();
@@ -660,32 +880,24 @@
         if(historyStack.length > 0) {
             const state = historyStack.pop(); 
             
-            // Restore System State
             flowField = [...state.flow];
             currentPalette = state.palette ? [...state.palette] : null;
             
-            // RESTORE PARTICLE POSITIONS (Teleport)
-            if(state.particles && state.particles.length === particles.length) {
-                for(let i=0; i<particles.length; i++) {
-                    const p = particles[i];
-                    const s = state.particles[i];
-                    
-                    p.x = s.x; p.y = s.y; // Teleport back
-                    p.vx = s.vx; p.vy = s.vy; // Stop or resume movement
-                    p.vx = 0; p.vy = 0; // Stop movement for clarity
-                    
-                    if (currentPalette) applyColorToParticle(p, currentPalette);
-                    else p.color = p.originalColor;
-                }
-            } else {
-                // Fallback if particles changed
-                resetFlow(false);
+            particles.forEach(p => {
+                p.vx = 0; p.vy = 0;
+                p.x = p.originX; p.y = p.originY;
+                if (currentPalette) applyColorToParticle(p, currentPalette);
+                else p.color = p.originalColor;
+            });
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (sourceImage.complete) {
+                ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
             }
 
             showNotification("Undo Successful");
             updateUndoBtn();
         } else {
-            // If history empty, reset to clean
             resetFlow(false);
             showNotification("Nothing to Undo");
         }
@@ -697,7 +909,7 @@
     }
 
     function resetFlow(clearHistory = true) {
-        if(clearHistory) pushToHistory(); 
+        if(clearHistory) saveState(); 
         for(let i=0; i<flowField.length; i++) flowField[i] = null;
         particles.forEach(p => { 
             p.vx = 0; p.vy = 0;
@@ -705,6 +917,16 @@
             p.color = p.originalColor;
         });
         currentPalette = null;
+        
+        // STOP ALL
+        isAutoPilot = false; document.getElementById('btn-auto').classList.remove('active');
+        if(isAudioActive) { isAudioActive = false; audioBtn.classList.remove('active'); }
+        isNeonMode = false; document.getElementById('glow-switch').checked = false;
+        document.getElementById('filter-input').value = '';
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+        showNotification("Reset Complete");
     }
 
     function showNotification(msg) {
@@ -721,6 +943,12 @@
         document.body.style.cursor = tool === 'paint' ? 'none' : 'default';
     }
 
+    window.setShape = function(shape, btn) {
+        particleShape = shape;
+        document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
     window.reloadDensity = function() {
         particleDensity = parseInt(document.getElementById('density-slider').value);
         loadingEl.style.display = 'block';
@@ -731,13 +959,10 @@
         }, 50);
     }
 
-    // --- FILTERS ---
     window.applySmartFilter = function() {
         const text = document.getElementById('filter-input').value.toLowerCase();
         if(!text) return;
-        
-        pushToHistory(); // Save state before changing colors
-        
+        saveState(); 
         let colors = generatePaletteFromText(text);
         currentPalette = colors;
         particles.forEach(p => applyColorToParticle(p, colors));
@@ -750,7 +975,6 @@
         if (text.includes('forest') || text.includes('green')) return ["#010", "#131", "#252", "#484", "#8c8"];
         if (text.includes('noir') || text.includes('gray')) return ["#000", "#333", "#666", "#999", "#fff"];
         if (text.includes('gold')) return ["#110", "#430", "#860", "#fc0", "#ffc"];
-
         let hash = 0;
         for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash);
         const c1 = `hsl(${Math.abs(hash % 360)}, 70%, 20%)`;
@@ -761,7 +985,7 @@
     }
 
     window.quickFilter = function(type) {
-        pushToHistory(); // Save state before changing
+        saveState();
         if (type === 'original') {
             currentPalette = null;
             particles.forEach(p => p.color = p.originalColor);
@@ -781,12 +1005,11 @@
     function handleEnter(e) { if(e.key === 'Enter') applySmartFilter(); }
 
     window.resetOriginal = function() {
-        pushToHistory();
+        saveState();
         currentPalette = null;
         sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
     }
 
-    // --- EVENTS ---
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -806,8 +1029,7 @@
     window.addEventListener('mousedown', () => {
         isMouseDown = true;
         if(currentTool === 'paint') {
-            // CAPTURE SNAPSHOT NOW (Before change happens)
-            tempSnapshot = createSnapshot();
+            tempSnapshot = createSnapshot(); // SAVE BEFORE START
             isDrawingDirty = false; 
             cursorGuide.style.borderColor = '#ff0055';
             cursorGuide.style.transform = 'translate(-50%, -50%) scale(0.9)';
@@ -817,9 +1039,8 @@
     window.addEventListener('mouseup', () => {
         isMouseDown = false;
         if(currentTool === 'paint') {
-            // COMMIT SNAPSHOT ONLY IF DRAWING HAPPENED
             if(isDrawingDirty && tempSnapshot) {
-                pushToHistory();
+                saveState(); // SAVE AFTER FINISH
                 tempSnapshot = null;
             }
             cursorGuide.style.borderColor = 'rgba(255,255,255,0.8)';
@@ -831,13 +1052,16 @@
         mouse.radius = parseInt(e.target.value);
         cursorGuide.style.width = (mouse.radius*2) + 'px';
         cursorGuide.style.height = (mouse.radius*2) + 'px';
+        document.getElementById('val-radius').innerText = mouse.radius + "px";
     });
 
-    document.getElementById('speed-slider').addEventListener('input', e => { });
+    document.getElementById('speed-slider').addEventListener('input', e => {
+        document.getElementById('val-speed').innerText = e.target.value;
+    });
 
     document.getElementById('file-input').addEventListener('change', function(e) {
         if(this.files && this.files[0]) {
-            pushToHistory(); // Save state before changing image
+            saveState();
             const reader = new FileReader();
             reader.onload = (ev) => { sourceImage.src = ev.target.result; }
             reader.readAsDataURL(this.files[0]);
