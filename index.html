@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van Gogh Studio | Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #fcd34d; /* Star Yellow */
+            --accent: #63b3ed; /* Sky Blue */
+            --dark-bg: #020617; /* Deep Night */
+            --panel-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--dark-bg);
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        canvas { display: block; position: fixed; top: 0; left: 0; z-index: 1; }
+
+        /* INTRO OVERLAY */
+        #intro-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4); 
+            backdrop-filter: blur(5px);
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--primary);
+            text-shadow: 0 0 40px rgba(252, 211, 77, 0.4); margin: 0;
+            text-align: center; letter-spacing: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem; color: #fff; margin-top: 10px; margin-bottom: 3rem; 
+            letter-spacing: 4px; text-transform: uppercase; opacity: 0.9;
+        }
+
+        /* GİRİŞ BUTONU (DÜZELTİLDİ: width: auto eklendi) */
+        #start-btn {
+            width: auto; /* Genişliği içeriğe göre ayarla */
+            min-width: 200px; /* Çok küçük olmasın */
+            padding: 15px 40px; font-size: 1rem; font-weight: 600;
+            background: rgba(252, 211, 77, 0.1); border: 1px solid var(--primary);
+            color: var(--primary); border-radius: 50px; cursor: pointer;
+            backdrop-filter: blur(10px); transition: all 0.3s ease;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        #start-btn:hover {
+            background: var(--primary); color: #000; 
+            box-shadow: 0 0 30px rgba(252, 211, 77, 0.5); transform: scale(1.05);
+        }
+
+        /* MAIN UI */
+        .app-ui { opacity: 0; visibility: hidden; transition: opacity 0.5s ease 0.5s; position: fixed; z-index: 50; }
+
+        #sidebar {
+            top: 20px; right: 20px; width: 320px; bottom: 20px;
+            background: var(--panel-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 16px;
+            display: flex; flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .sidebar-header h2 {
+            font-family: 'Playfair Display', serif; font-size: 1.2rem; margin: 0; color: var(--primary);
+        }
+
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .sidebar-content::-webkit-scrollbar { width: 4px; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+
+        .section { margin-bottom: 25px; }
+        .section-title {
+            font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.5; }
+
+        .row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .col { flex: 1; }
+
+        /* GENEL BUTON STİLİ */
+        button {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05); color: var(--text-main);
+            cursor: pointer; transition: all 0.2s; font-size: 0.8rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px;
+        }
+        button:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
+        button.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(99, 179, 237, 0.4); }
+        button.primary { border-color: var(--primary); color: var(--primary); }
+        button.primary:hover { background: var(--primary); color: #000; }
+
+        .btn-paint.active { background: #ff0055; border-color: #ff0055; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+        .btn-ai { border: 1px solid #a855f7; color: #a855f7; background: rgba(168,85,247,0.05); }
+        .btn-ai:hover { background: #a855f7; color: #fff; }
+
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 10px; background: rgba(0,0,0,0.4); 
+            border: 1px solid var(--border); border-radius: 6px;
+            color: #fff; font-family: inherit; font-size: 0.85rem; margin-bottom: 8px;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .slider-group { margin-bottom: 15px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
+
+        #loading {
+            position: fixed; bottom: 30px; left: 30px;
+            background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px;
+            font-size: 0.8rem; color: var(--primary); letter-spacing: 1px;
+            border: 1px solid var(--border); z-index: 200; display: none;
+        }
+
+        #cursor-guide {
+            position: fixed; pointer-events: none; z-index: 9999;
+            border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
+            transform: translate(-50%, -50%); display: none;
+            mix-blend-mode: difference; transition: width 0.1s, height 0.1s;
+        }
+
+        #notification {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(252, 211, 77, 0.9); color: #000;
+            padding: 10px 20px; border-radius: 30px; font-weight: bold;
+            z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            #sidebar { top: auto; bottom: 0; left: 0; right: 0; width: 100%; height: 50vh; border-radius: 20px 20px 0 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading">PROCESSING...</div>
+    <div id="notification">Action Undone</div>
+    <div id="cursor-guide"></div>
+
+    <!-- INTRO SCREEN -->
+    <div id="intro-layer">
+        <h1 class="hero-title">Van Gogh Studio</h1>
+        <div class="hero-subtitle">Interactive Digital Art</div>
+        <button id="start-btn" onclick="startApp()">ENTER STUDIO</button>
+    </div>
+
+    <!-- MAIN UI -->
+    <div id="sidebar" class="app-ui">
+        <div class="sidebar-header">
+            <h2>Studio Controls</h2>
+            <span style="font-size: 0.7rem; color: #666;">Ultimate v8</span>
+        </div>
+        
+        <div class="sidebar-content">
+            
+            <!-- 1. TOOLS -->
+            <div class="section">
+                <div class="section-title">Tools & Interaction</div>
+                <div class="row">
+                    <button class="col active" id="btn-view" onclick="setTool('view')">👁️ View</button>
+                    <button class="col btn-paint" id="btn-paint" onclick="setTool('paint')">🖌️ Brush</button>
+                </div>
+                <div class="row">
+                    <button class="col" onclick="undoAction()" id="btn-undo" style="opacity:0.5">↩️ Undo</button>
+                    <button class="col" onclick="resetFlow()">❄️ Freeze</button>
+                </div>
+            </div>
+
+            <!-- 2. SETTINGS -->
+            <div class="section">
+                <div class="section-title">Simulation</div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>Brush Size</span><span id="val-radius">70px</span></div>
+                    <input type="range" id="radius-slider" min="20" max="200" value="70">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>Flow Speed</span><span id="val-speed">5</span></div>
+                    <input type="range" id="speed-slider" min="1" max="20" value="5">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>Density</span><span id="val-density">Medium</span></div>
+                    <input type="range" id="density-slider" min="3" max="12" value="6" onchange="reloadDensity()">
+                </div>
+            </div>
+
+            <!-- 3. FILTERS -->
+            <div class="section">
+                <div class="section-title">Smart Filters (Free)</div>
+                <div style="position: relative;">
+                    <input type="text" id="filter-input" placeholder="Type: Fire, Ocean, Forest, Noir..." onkeypress="handleEnter(event)">
+                    <button class="btn-ai" onclick="applySmartFilter()" style="width:100%; margin-top: 5px;">✨ Apply Filter</button>
+                </div>
+                
+                <!-- Quick Filters -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:10px;">
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('fire')">🔥 Fire</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('ocean')">🌊 Ocean</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('forest')">🌲 Forest</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('neon')">🟣 Neon</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('noir')">⚫ Noir</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('original')">↺ Original</button>
+                </div>
+            </div>
+
+            <!-- 4. SOURCE -->
+            <div class="section">
+                <div class="section-title">Source & AI</div>
+                <div class="row">
+                    <button class="col" onclick="document.getElementById('file-input').click()">📂 Upload</button>
+                    <button class="col" onclick="resetOriginal()">↺ Reset</button>
+                </div>
+                <input type="file" id="file-input" accept="image/*" style="display:none">
+
+                <details style="margin-top:10px; border:1px dashed var(--border); padding:10px; border-radius:8px;">
+                    <summary style="font-size:0.75rem; cursor:pointer; color:var(--text-muted);">Generate with Gemini AI (API)</summary>
+                    <input type="password" id="api-key" placeholder="Paste Gemini API Key" style="margin-top:10px;">
+                    <!-- API LINK EKLENDİ -->
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.7rem; color:var(--accent); text-decoration:none; display:block; margin-bottom:10px;">🔑 Get API Key Here</a>
+                    
+                    <input type="text" id="ai-prompt" placeholder="Prompt: A cyberpunk city...">
+                    <button class="btn-ai" onclick="generateWithAI()">🎨 Generate SVG</button>
+                </details>
+            </div>
+
+            <button class="primary" onclick="saveSnapshot()">📸 Download Artwork</button>
+            <div style="height: 20px;"></div> 
+        </div>
+    </div>
+
+    <canvas id="canvas1"></canvas>
+
+<script>
+    const canvas = document.getElementById('canvas1');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    
+    const introLayer = document.getElementById('intro-layer');
+    const loadingEl = document.getElementById('loading');
+    const cursorGuide = document.getElementById('cursor-guide');
+    const sidebar = document.getElementById('sidebar');
+    const notif = document.getElementById('notification');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    let particles = [];
+    let flowField = [];
+    const flowRes = 15;
+    let rows, cols;
+    
+    let sourceImage = new Image();
+    let currentTool = 'view';
+    let isMouseDown = false;
+    let isDrawingDirty = false; 
+    let particleDensity = 6; 
+    
+    let historyStack = []; 
+    
+    let mouse = { x: 0, y: 0, radius: 70, lastX: 0, lastY: 0 };
+    let currentPalette = null; 
+
+    function init() {
+        sourceImage.crossOrigin = "Anonymous";
+        sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
+        
+        sourceImage.onload = () => {
+            processImage();
+            animate();
+        };
+    }
+
+    function startApp() {
+        introLayer.style.opacity = '0';
+        introLayer.style.visibility = 'hidden';
+        sidebar.style.opacity = '1';
+        sidebar.style.visibility = 'visible';
+    }
+
+    function processImage() {
+        let imgW, imgH, offX, offY;
+        const ratio = sourceImage.width / sourceImage.height;
+        if (canvas.width / canvas.height > ratio) {
+            imgW = canvas.width; imgH = canvas.width / ratio; offX = 0; offY = (canvas.height - imgH) / 2;
+        } else {
+            imgH = canvas.height; imgW = imgH * ratio; offX = (canvas.width - imgW) / 2; offY = 0;
+        }
+
+        ctx.drawImage(sourceImage, offX, offY, imgW, imgH);
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        initFlowField();
+        initParticles(pixels);
+        
+        historyStack = []; 
+        saveState(); // Initial State
+    }
+
+    function initFlowField() {
+        flowField = [];
+        rows = Math.ceil(canvas.height / flowRes);
+        cols = Math.ceil(canvas.width / flowRes);
+        for (let i = 0; i < rows * cols; i++) flowField.push(null);
+    }
+
+    function initParticles(pixels) {
+        particles = [];
+        const gap = particleDensity;
+        
+        for (let y = 0; y < canvas.height; y += gap) {
+            for (let x = 0; x < canvas.width; x += gap) {
+                if(gap < 4 && Math.random() > 0.8) continue;
+
+                const index = (y * pixels.width + x) * 4;
+                const alpha = pixels.data[index + 3];
+                
+                if (alpha > 128) {
+                    const r = pixels.data[index];
+                    const g = pixels.data[index + 1];
+                    const b = pixels.data[index + 2];
+                    const color = `rgb(${r},${g},${b})`;
+                    const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+                    
+                    const p = new Particle(x, y, color, brightness);
+                    if(currentPalette) applyColorToParticle(p, currentPalette);
+                    particles.push(p);
+                }
+            }
+        }
+    }
+
+    class Particle {
+        constructor(x, y, color, brightness) {
+            this.originX = x;
+            this.originY = y;
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.originalColor = color;
+            this.brightness = brightness;
+            this.baseSize = Math.max(particleDensity * 0.6, brightness * particleDensity * 1.2);
+            this.vx = 0; 
+            this.vy = 0;
+            this.speedMod = Math.random() * 0.6 + 0.4;
+        }
+
+        update(speedFactor) {
+            const col = Math.floor(this.x / flowRes);
+            const row = Math.floor(this.y / flowRes);
+            const index = col + row * cols;
+            let hasFlow = false;
+
+            if (flowField[index] !== undefined && flowField[index] !== null) {
+                const angle = flowField[index];
+                this.vx += Math.cos(angle) * 0.2;
+                this.vy += Math.sin(angle) * 0.2;
+                hasFlow = true;
+            }
+
+            if (!hasFlow) {
+                const dx = this.originX - this.x;
+                const dy = this.originY - this.y;
+                this.vx += dx * 0.08;
+                this.vy += dy * 0.08;
+                this.vx *= 0.7; 
+                this.vy *= 0.7;
+            } else {
+                const maxSpeed = speedFactor * this.speedMod;
+                this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
+                this.vy = Math.max(Math.min(this.vy, maxSpeed), -maxSpeed);
+            }
+
+            // Mouse Interaction (View Mode)
+            if (currentTool === 'view' && mouse.x !== 0) {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < mouse.radius) {
+                    const force = (mouse.radius - dist) / mouse.radius;
+                    const angle = Math.atan2(dy, dx);
+                    const push = 2;
+                    this.vx -= Math.cos(angle) * force * push;
+                    this.vy -= Math.sin(angle) * force * push;
+                }
+            }
+
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (hasFlow) {
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.baseSize, this.baseSize);
+        }
+    }
+
+    function animate() {
+        const speed = parseInt(document.getElementById('speed-slider').value);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if(particles.length > 0) {
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update(speed);
+                particles[i].draw();
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function paintFlow() {
+        const dx = mouse.x - mouse.lastX;
+        const dy = mouse.y - mouse.lastY;
+        if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+
+        const angle = Math.atan2(dy, dx);
+        const rCells = Math.ceil(mouse.radius / flowRes);
+        const cCol = Math.floor(mouse.x / flowRes);
+        const cRow = Math.floor(mouse.y / flowRes);
+
+        for (let y = -rCells; y <= rCells; y++) {
+            for (let x = -rCells; x <= rCells; x++) {
+                const col = cCol + x;
+                const row = cRow + y;
+                if (col >= 0 && col < cols && row >= 0 && row < rows) {
+                    const dist = Math.sqrt(x*x + y*y) * flowRes;
+                    if (dist < mouse.radius) {
+                        const idx = col + row * cols;
+                        flowField[idx] = angle; 
+                        isDrawingDirty = true;
+                    }
+                }
+            }
+        }
+    }
+
+    // --- UNDO SYSTEM ---
+    function saveState() {
+        if(historyStack.length > 30) historyStack.shift();
+        historyStack.push({
+            flow: [...flowField],
+            palette: currentPalette ? [...currentPalette] : null
+        });
+        updateUndoBtn();
+    }
+
+    function undoAction() {
+        if(historyStack.length > 1) {
+            historyStack.pop(); // Remove current
+            const state = historyStack[historyStack.length - 1]; // Get previous
+            
+            if (state) {
+                flowField = [...state.flow];
+                currentPalette = state.palette ? [...state.palette] : null;
+                
+                // HARD RESET (Teleport)
+                particles.forEach(p => {
+                    p.vx = 0; p.vy = 0;
+                    p.x = p.originX; p.y = p.originY;
+                    
+                    if (currentPalette) applyColorToParticle(p, currentPalette);
+                    else p.color = p.originalColor;
+                });
+                
+                showNotification("Undo Successful");
+            }
+            updateUndoBtn();
+        } else {
+            resetFlow(); // If only 1 state left, reset to clean
+            showNotification("Back to Start");
+        }
+    }
+
+    function updateUndoBtn() {
+        const btn = document.getElementById('btn-undo');
+        btn.style.opacity = historyStack.length > 1 ? '1' : '0.5';
+    }
+
+    function resetFlow() {
+        for(let i=0; i<flowField.length; i++) flowField[i] = null;
+        particles.forEach(p => { 
+            p.vx = 0; p.vy = 0;
+            p.x = p.originX; p.y = p.originY;
+        });
+        // Keep only the first state
+        if(historyStack.length > 0) {
+            const initial = historyStack[0];
+            historyStack = [initial];
+        }
+        updateUndoBtn();
+    }
+
+    function showNotification(msg) {
+        notif.innerText = msg;
+        notif.style.opacity = 1;
+        setTimeout(() => notif.style.opacity = 0, 1500);
+    }
+
+    // --- TOOLS ---
+    window.setTool = function(tool) {
+        currentTool = tool;
+        document.getElementById('btn-view').className = tool === 'view' ? 'col active' : 'col';
+        document.getElementById('btn-paint').className = tool === 'paint' ? 'col btn-paint active' : 'col btn-paint';
+        cursorGuide.style.display = tool === 'paint' ? 'block' : 'none';
+        document.body.style.cursor = tool === 'paint' ? 'none' : 'default';
+    }
+
+    window.reloadDensity = function() {
+        particleDensity = parseInt(document.getElementById('density-slider').value);
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = "RE-PIXELATING...";
+        setTimeout(() => {
+            processImage();
+            loadingEl.style.display = 'none';
+        }, 50);
+    }
+
+    // --- FILTERS ---
+    window.applySmartFilter = function() {
+        const text = document.getElementById('filter-input').value.toLowerCase();
+        if(!text) return;
+        
+        saveState(); // Save current before applying
+        let colors = generatePaletteFromText(text);
+        
+        currentPalette = colors;
+        particles.forEach(p => applyColorToParticle(p, colors));
+    }
+
+    function generatePaletteFromText(text) {
+        if (text.includes('fire') || text.includes('red')) return ["#000", "#500", "#a00", "#f50", "#fc0"];
+        if (text.includes('ocean') || text.includes('blue')) return ["#001", "#024", "#058", "#09c", "#dff"];
+        if (text.includes('neon') || text.includes('cyber')) return ["#102", "#406", "#80a", "#f0f", "#0ff"];
+        if (text.includes('forest') || text.includes('green')) return ["#010", "#131", "#252", "#484", "#8c8"];
+        if (text.includes('noir') || text.includes('gray')) return ["#000", "#333", "#666", "#999", "#fff"];
+        if (text.includes('gold')) return ["#110", "#430", "#860", "#fc0", "#ffc"];
+
+        let hash = 0;
+        for (let i = 0; i < text.length; i++) hash = text.charCodeAt(i) + ((hash << 5) - hash);
+        const c1 = `hsl(${Math.abs(hash % 360)}, 70%, 20%)`;
+        const c2 = `hsl(${Math.abs((hash + 40) % 360)}, 70%, 40%)`;
+        const c3 = `hsl(${Math.abs((hash + 80) % 360)}, 80%, 60%)`;
+        const c4 = `hsl(${Math.abs((hash + 120) % 360)}, 100%, 80%)`;
+        return [c1, c2, c3, c4, "#ffffff"];
+    }
+
+    window.quickFilter = function(type) {
+        saveState(); // Save before filter change
+        if (type === 'original') {
+            currentPalette = null;
+            particles.forEach(p => p.color = p.originalColor);
+        } else {
+            document.getElementById('filter-input').value = type;
+            // Manually trigger filter application
+            let colors = generatePaletteFromText(type);
+            currentPalette = colors;
+            particles.forEach(p => applyColorToParticle(p, colors));
+        }
+    }
+
+    function applyColorToParticle(p, palette) {
+        const idx = Math.floor(p.brightness * (palette.length - 1));
+        p.color = palette[idx];
+    }
+
+    function handleEnter(e) {
+        if(e.key === 'Enter') applySmartFilter();
+    }
+
+    window.resetOriginal = function() {
+        saveState();
+        currentPalette = null;
+        sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
+    }
+
+    // --- AI GENERATION ---
+    window.generateWithAI = async function() {
+        const key = document.getElementById('api-key').value;
+        const prompt = document.getElementById('ai-prompt').value;
+        
+        if(!key) { alert("Please enter an API Key."); return; }
+        if(!prompt) { alert("Please enter a prompt."); return; }
+
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = "AI IS PAINTING...";
+
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`;
+            const fullPrompt = `Create a highly detailed, artistic, colorful SVG code (square ratio) for: "${prompt}". Return ONLY raw <svg> code. No markdown.`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
+            });
+
+            const data = await response.json();
+            let svg = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            if(svg) {
+                saveState(); // Save before loading new image
+                svg = svg.replace(/```xml/g, '').replace(/```svg/g, '').replace(/```/g, '').trim();
+                const blob = new Blob([svg], {type: 'image/svg+xml'});
+                sourceImage.src = URL.createObjectURL(blob);
+            } else {
+                throw new Error("No SVG generated");
+            }
+        } catch(e) {
+            alert("Error: " + e.message);
+        } finally {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    // --- EVENTS ---
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        processImage();
+    });
+
+    window.addEventListener('mousemove', e => {
+        mouse.lastX = mouse.x; mouse.lastY = mouse.y;
+        mouse.x = e.clientX; mouse.y = e.clientY;
+        
+        if(currentTool === 'paint') {
+            cursorGuide.style.left = e.clientX + 'px';
+            cursorGuide.style.top = e.clientY + 'px';
+            if(isMouseDown) paintFlow();
+        }
+    });
+
+    window.addEventListener('mousedown', () => {
+        isMouseDown = true;
+        if(currentTool === 'paint') {
+            isDrawingDirty = false; 
+            cursorGuide.style.borderColor = '#ff0055';
+            cursorGuide.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isMouseDown = false;
+        if(currentTool === 'paint') {
+            if(isDrawingDirty) saveState(); // Only save if painting happened
+            cursorGuide.style.borderColor = 'rgba(255,255,255,0.8)';
+            cursorGuide.style.transform = 'translate(-50%, -50%) scale(1)';
+        }
+    });
+
+    document.getElementById('radius-slider').addEventListener('input', e => {
+        mouse.radius = parseInt(e.target.value);
+        cursorGuide.style.width = (mouse.radius*2) + 'px';
+        cursorGuide.style.height = (mouse.radius*2) + 'px';
+    });
+
+    document.getElementById('speed-slider').addEventListener('input', e => {
+        // Redraw speed immediately
+    });
+
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        if(this.files && this.files[0]) {
+            saveState();
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                sourceImage.src = ev.target.result;
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    window.saveSnapshot = function() {
+        const link = document.createElement('a');
+        link.download = 'van-gogh-studio-art.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+
+    init();
+
+</script>
+</body>
+</html>
