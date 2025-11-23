@@ -21,6 +21,7 @@
         body {
             margin: 0; padding: 0;
             background-color: var(--dark-bg);
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
             overflow: hidden;
             font-family: 'Inter', sans-serif;
             color: var(--text-main);
@@ -34,14 +35,14 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.6); 
+            backdrop-filter: blur(8px);
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
         .hero-title {
             font-family: 'Playfair Display', serif; font-size: 5rem; color: var(--primary);
-            text-shadow: 0 0 40px rgba(252, 211, 77, 0.4); margin: 0;
+            text-shadow: 0 0 40px rgba(252, 211, 77, 0.5); margin: 0;
             text-align: center; letter-spacing: 2px;
         }
 
@@ -50,42 +51,55 @@
             letter-spacing: 4px; text-transform: uppercase; opacity: 0.9;
         }
 
-        /* GİRİŞ BUTONU (DÜZELTİLDİ: width: auto eklendi) */
         #start-btn {
-            width: auto; /* Genişliği içeriğe göre ayarla */
-            min-width: 200px; /* Çok küçük olmasın */
-            padding: 15px 40px; font-size: 1rem; font-weight: 600;
-            background: rgba(252, 211, 77, 0.1); border: 1px solid var(--primary);
+            width: auto; min-width: 180px;
+            padding: 14px 40px; font-size: 0.95rem; font-weight: 600;
+            background: rgba(252, 211, 77, 0.15); border: 1px solid var(--primary);
             color: var(--primary); border-radius: 50px; cursor: pointer;
             backdrop-filter: blur(10px); transition: all 0.3s ease;
-            text-transform: uppercase; letter-spacing: 2px;
+            text-transform: uppercase; letter-spacing: 1.5px;
         }
         #start-btn:hover {
             background: var(--primary); color: #000; 
-            box-shadow: 0 0 30px rgba(252, 211, 77, 0.5); transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(252, 211, 77, 0.6); transform: scale(1.05);
         }
 
         /* MAIN UI */
         .app-ui { opacity: 0; visibility: hidden; transition: opacity 0.5s ease 0.5s; position: fixed; z-index: 50; }
 
         #sidebar {
-            top: 20px; right: 20px; width: 320px; bottom: 20px;
+            top: 20px; right: 20px; width: 340px; 
+            max-height: 90vh; 
             background: var(--panel-bg); backdrop-filter: blur(20px);
             border: 1px solid var(--border); border-radius: 16px;
             display: flex; flex-direction: column;
             box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
-        .sidebar-header {
-            padding: 20px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .sidebar-header h2 {
-            font-family: 'Playfair Display', serif; font-size: 1.2rem; margin: 0; color: var(--primary);
-        }
+        #sidebar.collapsed { max-height: 60px; background: rgba(15, 23, 42, 0.6); }
 
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .sidebar-header {
+            padding: 15px 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: rgba(255,255,255,0.02);
+        }
+        .sidebar-header:hover { background: rgba(255,255,255,0.05); }
+
+        .sidebar-header h2 {
+            font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0; color: var(--primary);
+        }
+        
+        #sidebar-toggle-icon {
+            font-size: 0.8rem; color: var(--text-muted); transition: transform 0.3s;
+        }
+        #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
+
+        .sidebar-content {
+            flex: 1; overflow-y: auto; padding: 20px; opacity: 1; transition: opacity 0.3s;
+        }
+        #sidebar.collapsed .sidebar-content { opacity: 0; pointer-events: none; }
         .sidebar-content::-webkit-scrollbar { width: 4px; }
         .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
 
@@ -100,9 +114,8 @@
         .row { display: flex; gap: 8px; margin-bottom: 10px; }
         .col { flex: 1; }
 
-        /* GENEL BUTON STİLİ */
         button {
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
+            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
             background: rgba(255,255,255,0.05); color: var(--text-main);
             cursor: pointer; transition: all 0.2s; font-size: 0.8rem; font-weight: 600;
             display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px;
@@ -150,9 +163,25 @@
             z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
 
+        #gemini-modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px;
+            z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6;
+        }
+        #gemini-modal h3 { color: var(--ai-purple); margin-top: 0; display: flex; align-items: center; gap:10px; }
+        #gemini-content { max-height: 300px; overflow-y: auto; margin-bottom: 15px; white-space: pre-wrap; }
+        .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
+
         @media (max-width: 768px) {
             .hero-title { font-size: 3rem; }
-            #sidebar { top: auto; bottom: 0; left: 0; right: 0; width: 100%; height: 50vh; border-radius: 20px 20px 0 0; }
+            #sidebar { 
+                top: auto; bottom: 0; left: 0; right: 0; width: 100%; 
+                height: 60vh; border-radius: 20px 20px 0 0; max-height: 60vh;
+            }
+            #sidebar.collapsed { height: 60px; }
+            #gemini-modal { width: 90%; }
         }
     </style>
 </head>
@@ -169,11 +198,21 @@
         <button id="start-btn" onclick="startApp()">ENTER STUDIO</button>
     </div>
 
-    <!-- MAIN UI -->
+    <!-- GEMINI MODAL -->
+    <div id="gemini-modal">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <h3>✨ Art Critic Analysis</h3>
+        <div id="gemini-content">Gemini is thinking...</div>
+        <button class="btn-ai" onclick="closeModal()" style="width:100%">Close Analysis</button>
+    </div>
+
+    <!-- MAIN UI (SIDEBAR) -->
     <div id="sidebar" class="app-ui">
-        <div class="sidebar-header">
+        <div class="sidebar-header" onclick="toggleSidebar()">
             <h2>Studio Controls</h2>
-            <span style="font-size: 0.7rem; color: #666;">Ultimate v8</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span id="sidebar-toggle-icon">▼</span>
+            </div>
         </div>
         
         <div class="sidebar-content">
@@ -210,13 +249,12 @@
 
             <!-- 3. FILTERS -->
             <div class="section">
-                <div class="section-title">Smart Filters (Free)</div>
+                <div class="section-title">Smart Filters</div>
                 <div style="position: relative;">
                     <input type="text" id="filter-input" placeholder="Type: Fire, Ocean, Forest, Noir..." onkeypress="handleEnter(event)">
-                    <button class="btn-ai" onclick="applySmartFilter()" style="width:100%; margin-top: 5px;">✨ Apply Filter</button>
+                    <button class="btn-ai" onclick="applySmartFilter()" style="width:100%; margin-top: 5px; border-color: #fff; color: #fff;">✨ Apply Filter</button>
                 </div>
                 
-                <!-- Quick Filters -->
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:10px;">
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('fire')">🔥 Fire</button>
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('ocean')">🌊 Ocean</button>
@@ -227,23 +265,32 @@
                 </div>
             </div>
 
-            <!-- 4. SOURCE -->
+            <!-- 4. SOURCE & AI -->
             <div class="section">
-                <div class="section-title">Source & AI</div>
+                <div class="section-title" style="color: var(--ai-purple);">Gemini AI Tools</div>
+                
+                <!-- Upload & Reset -->
                 <div class="row">
                     <button class="col" onclick="document.getElementById('file-input').click()">📂 Upload</button>
                     <button class="col" onclick="resetOriginal()">↺ Reset</button>
                 </div>
                 <input type="file" id="file-input" accept="image/*" style="display:none">
 
-                <details style="margin-top:10px; border:1px dashed var(--border); padding:10px; border-radius:8px;">
-                    <summary style="font-size:0.75rem; cursor:pointer; color:var(--text-muted);">Generate with Gemini AI (API)</summary>
-                    <input type="password" id="api-key" placeholder="Paste Gemini API Key" style="margin-top:10px;">
-                    <!-- API LINK EKLENDİ -->
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.7rem; color:var(--accent); text-decoration:none; display:block; margin-bottom:10px;">🔑 Get API Key Here</a>
+                <details open style="margin-top:15px; border:1px dashed var(--ai-purple); padding:10px; border-radius:8px;">
+                    <summary style="font-size:0.75rem; cursor:pointer; color:var(--ai-purple); font-weight:bold;">✨ AI Features (API Key)</summary>
                     
-                    <input type="text" id="ai-prompt" placeholder="Prompt: A cyberpunk city...">
-                    <button class="btn-ai" onclick="generateWithAI()">🎨 Generate SVG</button>
+                    <input type="password" id="api-key" placeholder="Paste Gemini API Key Here" style="margin-top:10px;">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.7rem; color:var(--accent); text-decoration:none; display:block; margin-bottom:15px;">🔑 Get API Key Here</a>
+                    
+                    <!-- AI Feature 1: Analyze -->
+                    <button class="btn-ai" onclick="analyzeArt()" style="margin-bottom:10px;">👁️ Analyze My Art</button>
+
+                    <!-- AI Feature 2: Generate SVG -->
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <input type="text" id="ai-prompt" placeholder="Prompt: A cat in space..." style="margin-bottom:0;">
+                        <button class="btn-ai" onclick="enhancePrompt()" title="Magic Prompt" style="width:40px;">🪄</button>
+                    </div>
+                    <button class="btn-ai" onclick="generateWithAI()" style="margin-top:5px;">🎨 Generate Image</button>
                 </details>
             </div>
 
@@ -263,6 +310,9 @@
     const cursorGuide = document.getElementById('cursor-guide');
     const sidebar = document.getElementById('sidebar');
     const notif = document.getElementById('notification');
+    const modal = document.getElementById('gemini-modal');
+    const modalContent = document.getElementById('gemini-content');
+    const promptInput = document.getElementById('ai-prompt');
     
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -277,11 +327,25 @@
     let isMouseDown = false;
     let isDrawingDirty = false; 
     let particleDensity = 6; 
+    let animationId; 
     
+    let renderProps = { x: 0, y: 0, w: 0, h: 0 };
+
+    // HISTORY STACK
     let historyStack = []; 
+    const MAX_HISTORY = 20;
     
+    // TEMPORARY SNAPSHOT FOR UNDO
+    let tempSnapshot = null;
+
     let mouse = { x: 0, y: 0, radius: 70, lastX: 0, lastY: 0 };
     let currentPalette = null; 
+    let userApiKey = localStorage.getItem('gemini_api_key') || "";
+
+    // Init API Key field
+    if(userApiKey && document.getElementById('api-key')) {
+        document.getElementById('api-key').value = userApiKey;
+    }
 
     function init() {
         sourceImage.crossOrigin = "Anonymous";
@@ -289,8 +353,13 @@
         
         sourceImage.onload = () => {
             processImage();
-            animate();
+            if (!animationId) animate();
         };
+        
+        sourceImage.onerror = () => {
+            loadingEl.style.display = 'block';
+            loadingEl.innerText = "Error loading default image.";
+        }
     }
 
     function startApp() {
@@ -300,24 +369,118 @@
         sidebar.style.visibility = 'visible';
     }
 
-    function processImage() {
-        let imgW, imgH, offX, offY;
-        const ratio = sourceImage.width / sourceImage.height;
-        if (canvas.width / canvas.height > ratio) {
-            imgW = canvas.width; imgH = canvas.width / ratio; offX = 0; offY = (canvas.height - imgH) / 2;
-        } else {
-            imgH = canvas.height; imgW = imgH * ratio; offX = (canvas.width - imgW) / 2; offY = 0;
-        }
+    function toggleSidebar() { sidebar.classList.toggle('collapsed'); }
+    function closeModal() { modal.style.display = 'none'; }
 
-        ctx.drawImage(sourceImage, offX, offY, imgW, imgH);
+    function saveApiKey() {
+        const inputVal = document.getElementById('api-key').value.trim();
+        if(inputVal) {
+            userApiKey = inputVal;
+            localStorage.setItem('gemini_api_key', userApiKey);
+        }
+    }
+
+    // --- AI FEATURES ---
+    async function analyzeArt() {
+        const inputKey = document.getElementById('api-key').value.trim();
+        if(inputKey) userApiKey = inputKey;
+        if(!userApiKey) { alert("Please enter API Key first."); return; }
+        
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = "ANALYZING ART...";
+        
+        try {
+            const base64Image = canvas.toDataURL("image/jpeg", 0.5).split(',')[1];
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: "Act as an art critic. Analyze this image. Describe the composition, color palette, and emotional atmosphere in a poetic and artistic way. Keep it concise (max 50 words)." },
+                        { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+                    ]
+                }]
+            };
+            const response = await fetch(url, {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Could not analyze.";
+            modalContent.innerText = text;
+            modal.style.display = 'block';
+        } catch(e) { alert("Error: " + e.message); } finally { loadingEl.style.display = 'none'; }
+    }
+
+    async function enhancePrompt() {
+        const inputKey = document.getElementById('api-key').value.trim();
+        if(inputKey) userApiKey = inputKey;
+        if(!userApiKey) { alert("Please enter API Key."); return; }
+        const current = promptInput.value;
+        if(!current) { alert("Type a keyword first."); return; }
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = "ENHANCING...";
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: `Rewrite this short art prompt into a detailed, vivid, artistic description suitable for generative art. Input: "${current}". Output only the new prompt.` }] }]
+            };
+            const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            const data = await response.json();
+            promptInput.value = data.candidates?.[0]?.content?.parts?.[0]?.text.trim();
+        } catch(e) { console.log(e); } finally { loadingEl.style.display = 'none'; }
+    }
+
+    async function generateWithAI() {
+        const inputKey = document.getElementById('api-key').value.trim();
+        if(inputKey) userApiKey = inputKey;
+        if(!userApiKey) { alert("Please enter API Key."); return; }
+        const prompt = promptInput.value;
+        if(!prompt) { alert("Please enter a prompt."); return; }
+        loadingEl.style.display = 'block';
+        loadingEl.innerText = "AI PAINTING...";
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
+            const fullPrompt = `Create a colorful SVG code (square ratio) for: "${prompt}". Return ONLY raw <svg> code. No markdown. No backticks. Just the code.`;
+            const response = await fetch(url, {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
+            });
+            const data = await response.json();
+            let svg = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if(svg) {
+                pushToHistory(); // Save before overwriting image
+                const svgStart = svg.indexOf('<svg');
+                const svgEnd = svg.lastIndexOf('</svg>') + 6;
+                if (svgStart !== -1 && svgEnd !== -1) {
+                    svg = svg.substring(svgStart, svgEnd);
+                    const blob = new Blob([svg], {type: 'image/svg+xml'});
+                    sourceImage.src = URL.createObjectURL(blob);
+                } else { throw new Error("Invalid SVG format."); }
+            } else { throw new Error("No response from AI."); }
+        } catch(e) { alert("Error: " + e.message); } finally { loadingEl.style.display = 'none'; }
+    }
+
+    // --- ENGINE ---
+
+    function processImage() {
+        if (!sourceImage.width) return;
+
+        // COVER LOGIC (Reverted as per request)
+        const scale = Math.max(canvas.width / sourceImage.width, canvas.height / sourceImage.height);
+        renderProps.w = sourceImage.width * scale;
+        renderProps.h = sourceImage.height * scale;
+        renderProps.x = (canvas.width - renderProps.w) / 2;
+        renderProps.y = (canvas.height - renderProps.h) / 2;
+
+        ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         initFlowField();
         initParticles(pixels);
         
+        // Clear history for new image
         historyStack = []; 
-        saveState(); // Initial State
+        // Do NOT save initial state as step 1. Step 0 is implicit.
+        // We will save state before any change.
     }
 
     function initFlowField() {
@@ -330,21 +493,17 @@
     function initParticles(pixels) {
         particles = [];
         const gap = particleDensity;
-        
         for (let y = 0; y < canvas.height; y += gap) {
             for (let x = 0; x < canvas.width; x += gap) {
                 if(gap < 4 && Math.random() > 0.8) continue;
-
                 const index = (y * pixels.width + x) * 4;
                 const alpha = pixels.data[index + 3];
-                
                 if (alpha > 128) {
                     const r = pixels.data[index];
                     const g = pixels.data[index + 1];
                     const b = pixels.data[index + 2];
                     const color = `rgb(${r},${g},${b})`;
                     const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-                    
                     const p = new Particle(x, y, color, brightness);
                     if(currentPalette) applyColorToParticle(p, currentPalette);
                     particles.push(p);
@@ -362,7 +521,7 @@
             this.color = color;
             this.originalColor = color;
             this.brightness = brightness;
-            this.baseSize = Math.max(particleDensity * 0.6, brightness * particleDensity * 1.2);
+            this.baseSize = Math.max(particleDensity * 0.8, brightness * particleDensity * 1.5);
             this.vx = 0; 
             this.vy = 0;
             this.speedMod = Math.random() * 0.6 + 0.4;
@@ -394,7 +553,6 @@
                 this.vy = Math.max(Math.min(this.vy, maxSpeed), -maxSpeed);
             }
 
-            // Mouse Interaction (View Mode)
             if (currentTool === 'view' && mouse.x !== 0) {
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
@@ -426,9 +584,17 @@
     }
 
     function animate() {
+        animationId = requestAnimationFrame(animate);
         const speed = parseInt(document.getElementById('speed-slider').value);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (sourceImage.complete && sourceImage.naturalWidth !== 0) {
+            ctx.globalAlpha = 0.05; 
+            ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+            ctx.globalAlpha = 1.0; 
+        } else {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
         
         if(particles.length > 0) {
             for(let i=0; i<particles.length; i++) {
@@ -436,7 +602,6 @@
                 particles[i].draw();
             }
         }
-        requestAnimationFrame(animate);
     }
 
     function paintFlow() {
@@ -465,60 +630,81 @@
         }
     }
 
-    // --- UNDO SYSTEM ---
-    function saveState() {
-        if(historyStack.length > 30) historyStack.shift();
-        historyStack.push({
+    // --- SMART UNDO SYSTEM ---
+    function createSnapshot() {
+        const particleStates = particles.map(p => ({
+            x: p.x, y: p.y, vx: p.vx, vy: p.vy, c: p.color
+        }));
+        
+        return {
             flow: [...flowField],
+            particles: particleStates,
             palette: currentPalette ? [...currentPalette] : null
-        });
+        };
+    }
+
+    function pushToHistory() {
+        if(historyStack.length > MAX_HISTORY) historyStack.shift();
+        
+        if(tempSnapshot) {
+            historyStack.push(tempSnapshot);
+            tempSnapshot = null;
+        } else {
+            // Direct save (e.g. Filters, AI)
+            historyStack.push(createSnapshot());
+        }
         updateUndoBtn();
     }
 
     function undoAction() {
-        if(historyStack.length > 1) {
-            historyStack.pop(); // Remove current
-            const state = historyStack[historyStack.length - 1]; // Get previous
+        if(historyStack.length > 0) {
+            const state = historyStack.pop(); 
             
-            if (state) {
-                flowField = [...state.flow];
-                currentPalette = state.palette ? [...state.palette] : null;
-                
-                // HARD RESET (Teleport)
-                particles.forEach(p => {
-                    p.vx = 0; p.vy = 0;
-                    p.x = p.originX; p.y = p.originY;
+            // Restore System State
+            flowField = [...state.flow];
+            currentPalette = state.palette ? [...state.palette] : null;
+            
+            // RESTORE PARTICLE POSITIONS (Teleport)
+            if(state.particles && state.particles.length === particles.length) {
+                for(let i=0; i<particles.length; i++) {
+                    const p = particles[i];
+                    const s = state.particles[i];
+                    
+                    p.x = s.x; p.y = s.y; // Teleport back
+                    p.vx = s.vx; p.vy = s.vy; // Stop or resume movement
+                    p.vx = 0; p.vy = 0; // Stop movement for clarity
                     
                     if (currentPalette) applyColorToParticle(p, currentPalette);
                     else p.color = p.originalColor;
-                });
-                
-                showNotification("Undo Successful");
+                }
+            } else {
+                // Fallback if particles changed
+                resetFlow(false);
             }
+
+            showNotification("Undo Successful");
             updateUndoBtn();
         } else {
-            resetFlow(); // If only 1 state left, reset to clean
-            showNotification("Back to Start");
+            // If history empty, reset to clean
+            resetFlow(false);
+            showNotification("Nothing to Undo");
         }
     }
 
     function updateUndoBtn() {
         const btn = document.getElementById('btn-undo');
-        btn.style.opacity = historyStack.length > 1 ? '1' : '0.5';
+        btn.style.opacity = historyStack.length > 0 ? '1' : '0.5';
     }
 
-    function resetFlow() {
+    function resetFlow(clearHistory = true) {
+        if(clearHistory) pushToHistory(); 
         for(let i=0; i<flowField.length; i++) flowField[i] = null;
         particles.forEach(p => { 
             p.vx = 0; p.vy = 0;
             p.x = p.originX; p.y = p.originY;
+            p.color = p.originalColor;
         });
-        // Keep only the first state
-        if(historyStack.length > 0) {
-            const initial = historyStack[0];
-            historyStack = [initial];
-        }
-        updateUndoBtn();
+        currentPalette = null;
     }
 
     function showNotification(msg) {
@@ -527,7 +713,6 @@
         setTimeout(() => notif.style.opacity = 0, 1500);
     }
 
-    // --- TOOLS ---
     window.setTool = function(tool) {
         currentTool = tool;
         document.getElementById('btn-view').className = tool === 'view' ? 'col active' : 'col';
@@ -551,9 +736,9 @@
         const text = document.getElementById('filter-input').value.toLowerCase();
         if(!text) return;
         
-        saveState(); // Save current before applying
-        let colors = generatePaletteFromText(text);
+        pushToHistory(); // Save state before changing colors
         
+        let colors = generatePaletteFromText(text);
         currentPalette = colors;
         particles.forEach(p => applyColorToParticle(p, colors));
     }
@@ -576,13 +761,12 @@
     }
 
     window.quickFilter = function(type) {
-        saveState(); // Save before filter change
+        pushToHistory(); // Save state before changing
         if (type === 'original') {
             currentPalette = null;
             particles.forEach(p => p.color = p.originalColor);
         } else {
             document.getElementById('filter-input').value = type;
-            // Manually trigger filter application
             let colors = generatePaletteFromText(type);
             currentPalette = colors;
             particles.forEach(p => applyColorToParticle(p, colors));
@@ -594,53 +778,12 @@
         p.color = palette[idx];
     }
 
-    function handleEnter(e) {
-        if(e.key === 'Enter') applySmartFilter();
-    }
+    function handleEnter(e) { if(e.key === 'Enter') applySmartFilter(); }
 
     window.resetOriginal = function() {
-        saveState();
+        pushToHistory();
         currentPalette = null;
         sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
-    }
-
-    // --- AI GENERATION ---
-    window.generateWithAI = async function() {
-        const key = document.getElementById('api-key').value;
-        const prompt = document.getElementById('ai-prompt').value;
-        
-        if(!key) { alert("Please enter an API Key."); return; }
-        if(!prompt) { alert("Please enter a prompt."); return; }
-
-        loadingEl.style.display = 'block';
-        loadingEl.innerText = "AI IS PAINTING...";
-
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`;
-            const fullPrompt = `Create a highly detailed, artistic, colorful SVG code (square ratio) for: "${prompt}". Return ONLY raw <svg> code. No markdown.`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
-            });
-
-            const data = await response.json();
-            let svg = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            if(svg) {
-                saveState(); // Save before loading new image
-                svg = svg.replace(/```xml/g, '').replace(/```svg/g, '').replace(/```/g, '').trim();
-                const blob = new Blob([svg], {type: 'image/svg+xml'});
-                sourceImage.src = URL.createObjectURL(blob);
-            } else {
-                throw new Error("No SVG generated");
-            }
-        } catch(e) {
-            alert("Error: " + e.message);
-        } finally {
-            loadingEl.style.display = 'none';
-        }
     }
 
     // --- EVENTS ---
@@ -653,7 +796,6 @@
     window.addEventListener('mousemove', e => {
         mouse.lastX = mouse.x; mouse.lastY = mouse.y;
         mouse.x = e.clientX; mouse.y = e.clientY;
-        
         if(currentTool === 'paint') {
             cursorGuide.style.left = e.clientX + 'px';
             cursorGuide.style.top = e.clientY + 'px';
@@ -664,6 +806,8 @@
     window.addEventListener('mousedown', () => {
         isMouseDown = true;
         if(currentTool === 'paint') {
+            // CAPTURE SNAPSHOT NOW (Before change happens)
+            tempSnapshot = createSnapshot();
             isDrawingDirty = false; 
             cursorGuide.style.borderColor = '#ff0055';
             cursorGuide.style.transform = 'translate(-50%, -50%) scale(0.9)';
@@ -673,7 +817,11 @@
     window.addEventListener('mouseup', () => {
         isMouseDown = false;
         if(currentTool === 'paint') {
-            if(isDrawingDirty) saveState(); // Only save if painting happened
+            // COMMIT SNAPSHOT ONLY IF DRAWING HAPPENED
+            if(isDrawingDirty && tempSnapshot) {
+                pushToHistory();
+                tempSnapshot = null;
+            }
             cursorGuide.style.borderColor = 'rgba(255,255,255,0.8)';
             cursorGuide.style.transform = 'translate(-50%, -50%) scale(1)';
         }
@@ -685,17 +833,13 @@
         cursorGuide.style.height = (mouse.radius*2) + 'px';
     });
 
-    document.getElementById('speed-slider').addEventListener('input', e => {
-        // Redraw speed immediately
-    });
+    document.getElementById('speed-slider').addEventListener('input', e => { });
 
     document.getElementById('file-input').addEventListener('change', function(e) {
         if(this.files && this.files[0]) {
-            saveState();
+            pushToHistory(); // Save state before changing image
             const reader = new FileReader();
-            reader.onload = (ev) => {
-                sourceImage.src = ev.target.result;
-            }
+            reader.onload = (ev) => { sourceImage.src = ev.target.result; }
             reader.readAsDataURL(this.files[0]);
         }
     });
@@ -708,7 +852,6 @@
     }
 
     init();
-
 </script>
 </body>
 </html>
