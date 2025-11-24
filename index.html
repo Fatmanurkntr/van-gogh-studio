@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Van Gogh Studio | Ultimate</title>
-    <!-- Satisfy fontu eklendi (Hem el yazısı gibi hem okunaklı) -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&family=Satisfy&display=swap" rel="stylesheet">
+    <title>Van Gogh Studio | Masterpiece</title>
+    <!-- Courgette: Hem el yazısı hissi veren hem de sade ve okunaklı bir font -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&family=Courgette&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #fcd34d; /* Star Yellow */
@@ -41,45 +41,48 @@
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        /* YENİLENEN YAZI STİLİ - BEYAZ */
+        /* ESTETİK YAZI - BEYAZ */
         .poetic-text {
-            font-family: 'Satisfy', cursive; 
-            font-size: 2.2rem;
-            color: #ffffff; /* BEYAZ RENK */
-            opacity: 1;
+            font-family: 'Courgette', cursive; 
+            font-size: 2rem;
+            color: #ffffff; 
+            opacity: 0.95;
             margin-bottom: 0px; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            letter-spacing: 1px;
-            transform: none; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
             font-weight: 400;
+            position: relative;
+            z-index: 2;
         }
 
         /* ANA BAŞLIK - SARI */
         .hero-title {
-            font-family: 'Playfair Display', serif; font-size: 5rem; 
-            color: var(--primary); /* SARI RENK */
-            text-shadow: 0 0 40px rgba(252, 211, 77, 0.4); margin: 0;
+            font-family: 'Playfair Display', serif; font-size: 5.5rem; 
+            color: var(--primary);
+            text-shadow: 0 0 50px rgba(252, 211, 77, 0.4); margin: 0;
             text-align: center; letter-spacing: 2px;
             line-height: 1.2;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-subtitle {
-            font-size: 1.1rem; color: #aaa; margin-top: 10px; margin-bottom: 3rem; 
+            font-size: 1.1rem; color: #aaa; margin-top: 15px; margin-bottom: 3rem; 
             letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;
         }
 
         /* START BUTTON */
         #start-btn {
             width: auto; min-width: 160px;
-            padding: 14px 45px; font-size: 0.9rem; font-weight: 600;
-            background: rgba(252, 211, 77, 0.1); border: 1px solid var(--primary);
+            padding: 16px 45px; font-size: 1rem; font-weight: 600;
+            background: rgba(252, 211, 77, 0.15); border: 1px solid var(--primary);
             color: var(--primary); border-radius: 50px; cursor: pointer;
             backdrop-filter: blur(5px); transition: all 0.3s ease;
             text-transform: uppercase; letter-spacing: 1.5px;
         }
         #start-btn:hover {
             background: var(--primary); color: #000; 
-            box-shadow: 0 0 30px rgba(252, 211, 77, 0.6); transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(252, 211, 77, 0.6); transform: scale(1.05);
         }
 
         /* UI */
@@ -287,9 +290,11 @@
                 </div>
 
                 <div class="row">
+                    <!-- RANDOM BUTTON -->
+                    <button class="col" onclick="randomize()" title="Random Style">🎲 Random</button>
                     <button class="col" onclick="undoAction()" id="btn-undo" style="opacity:0.5">↩️ Undo</button>
-                    <button class="col" onclick="resetFlow()">❄️ Reset All</button>
                 </div>
+                <button class="col" onclick="resetFlow()" style="margin-top:5px;">❄️ Reset All</button>
             </div>
 
             <!-- 2. SETTINGS -->
@@ -315,6 +320,7 @@
                     </label>
                 </div>
 
+                <!-- DYNAMIC SLIDERS -->
                 <div class="slider-group">
                     <div class="slider-label"><span>Brush Size</span><span id="val-radius">70px</span></div>
                     <input type="range" id="radius-slider" min="20" max="200" value="70">
@@ -397,6 +403,7 @@
     const modalContent = document.getElementById('gemini-content');
     const promptInput = document.getElementById('ai-prompt');
     const audioBtn = document.getElementById('btn-audio');
+    const autoBtn = document.getElementById('btn-auto');
     
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -491,6 +498,28 @@
 
     function toggleGlow() {
         isNeonMode = document.getElementById('glow-switch').checked;
+    }
+    
+    function randomize() {
+        const filters = ['fire', 'ocean', 'neon', 'gold', 'forest', 'noir'];
+        const randFilter = filters[Math.floor(Math.random() * filters.length)];
+        
+        // Apply filter
+        document.getElementById('filter-input').value = randFilter;
+        quickFilter(randFilter);
+        
+        // Random Shape
+        const shapes = ['square', 'circle', 'line'];
+        const randShape = shapes[Math.floor(Math.random() * shapes.length)];
+        const shapeBtn = document.querySelectorAll('.shape-btn')[shapes.indexOf(randShape)];
+        setShape(randShape, shapeBtn);
+
+        // Random Speed
+        const randSpeed = Math.floor(Math.random() * 8) + 2;
+        document.getElementById('speed-slider').value = randSpeed;
+        document.getElementById('val-speed').innerText = randSpeed;
+        
+        saveState();
     }
 
     async function toggleAudio() {
@@ -673,7 +702,7 @@
             this.vx = 0; 
             this.vy = 0;
             this.speedMod = Math.random() * 0.6 + 0.4;
-            this.angle = 0; // Fix initial jitter
+            this.angle = 0; // Fix: Start flat
         }
 
         update(speedFactor) {
@@ -742,9 +771,9 @@
                 }
             }
 
-            // Fix jitter when very slow
-            if(Math.abs(this.vx) < 0.01) this.vx = 0;
-            if(Math.abs(this.vy) < 0.01) this.vy = 0;
+            // Fix jitter
+            if (Math.abs(this.vx) < 0.01) this.vx = 0;
+            if (Math.abs(this.vy) < 0.01) this.vy = 0;
 
             this.x += this.vx;
             this.y += this.vy;
@@ -759,22 +788,28 @@
                 this.x = this.originX; this.y = this.originY;
             }
             
-            // Only update angle if moving
+            // Update angle only if moving
             if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
                 this.angle = Math.atan2(this.vy, this.vx);
+            } else if (!isAudioActive && !isAutoPilot) {
+                // If stopped, reset to 0 for clean lines
+                 if(Math.abs(this.vx) < 0.1 && Math.abs(this.vy) < 0.1) this.angle = 0;
             }
         }
 
         draw() {
-            // TRUE NEON (ShadowBlur)
+            // NEON GLOW (SHADOW)
             if(isNeonMode) {
                 ctx.shadowBlur = 10; 
-                ctx.shadowColor = this.color; 
+                ctx.shadowColor = this.color;
+                // 'screen' modu yerine 'source-over' kullanıyoruz ki beyazlama olmasın.
+                // Parlaklık shadowBlur ile sağlanıyor.
+                ctx.globalCompositeOperation = 'source-over'; 
             } else {
                 ctx.shadowBlur = 0;
+                ctx.globalCompositeOperation = 'source-over';
             }
             
-            ctx.globalCompositeOperation = 'source-over';
             ctx.fillStyle = this.color;
             ctx.strokeStyle = this.color;
             let size = this.baseSize;
@@ -814,7 +849,7 @@
         }
 
         if (sourceImage.complete && sourceImage.naturalWidth !== 0) {
-            // Darker fade for Neon Mode
+            // Darker background in Neon Mode
             ctx.globalAlpha = isNeonMode ? 0.4 : 0.15; 
             ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
             ctx.globalAlpha = 1.0; 
@@ -888,13 +923,13 @@
                 p.x = p.originX; p.y = p.originY;
                 if (currentPalette) applyColorToParticle(p, currentPalette);
                 else p.color = p.originalColor;
+                p.angle = 0; // Reset angle on undo
             });
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (sourceImage.complete) {
                 ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
             }
-
             showNotification("Undo Successful");
             updateUndoBtn();
         } else {
@@ -915,6 +950,7 @@
             p.vx = 0; p.vy = 0;
             p.x = p.originX; p.y = p.originY;
             p.color = p.originalColor;
+            p.angle = 0;
         });
         currentPalette = null;
         
@@ -1050,9 +1086,9 @@
 
     document.getElementById('radius-slider').addEventListener('input', e => {
         mouse.radius = parseInt(e.target.value);
+        document.getElementById('val-radius').innerText = mouse.radius + "px";
         cursorGuide.style.width = (mouse.radius*2) + 'px';
         cursorGuide.style.height = (mouse.radius*2) + 'px';
-        document.getElementById('val-radius').innerText = mouse.radius + "px";
     });
 
     document.getElementById('speed-slider').addEventListener('input', e => {
