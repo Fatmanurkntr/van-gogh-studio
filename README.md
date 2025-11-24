@@ -1,4 +1,4 @@
-# 🎨 Van Gogh Studio - Ultimate Edition
+# 🎨 Van Gogh Studio 
 
 **Van Gogh Studio** is an interactive and generative art application inspired by Vincent van Gogh’s impasto technique, transforming static images into living particle simulations.
 
