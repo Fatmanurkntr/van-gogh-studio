@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Van Gogh Studio | Masterpiece</title>
-    <!-- Courgette: Hem el yazısı hissi veren hem de sade ve okunaklı bir font -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&family=Courgette&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #fcd34d; /* Star Yellow */
-            --accent: #63b3ed; /* Sky Blue */
-            --dark-bg: #020617; /* Deep Night */
-            --panel-bg: rgba(15, 23, 42, 0.85);
+            --primary: #fcd34d; 
+            --accent: #63b3ed; 
+            --dark-bg: #020617; 
+            --panel-bg: rgba(15, 23, 42, 0.95);
             --border: rgba(255, 255, 255, 0.15);
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
@@ -19,87 +18,119 @@
 
         * { box-sizing: border-box; }
 
-        body {
-            margin: 0; padding: 0;
+        html, body {
+            margin: 0; 
+            padding: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
             background-color: var(--dark-bg);
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-            overflow: hidden;
             font-family: 'Inter', sans-serif;
             color: var(--text-main);
             user-select: none;
+            touch-action: none;
         }
 
-        canvas { display: block; position: fixed; top: 0; left: 0; z-index: 1; }
+        /* Container for stacked canvases */
+        #canvas-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; 
+            height: 100%; 
+        }
+        
+        /* Layer 1: Deep Blur Background (Fills Screen) */
+        #canvas-bg-deep {
+            z-index: 0;
+            filter: blur(40px) brightness(0.4); 
+            object-fit: cover;
+        }
+
+        /* Layer 2: Mid Background (The Form / Underpainting) */
+        #canvas-bg-mid {
+            z-index: 1;
+            /* Reduced blur for better form definition underneath */
+            filter: blur(4px) brightness(0.8); 
+            opacity: 1.0; 
+        }
+
+        /* Layer 3: Particles (Texture) */
+        #canvas-fg {
+            z-index: 2;
+        }
 
         /* INTRO OVERLAY */
         #intro-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.6); 
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.75); 
+            backdrop-filter: blur(10px);
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        /* ESTETİK YAZI - BEYAZ */
         .poetic-text {
             font-family: 'Courgette', cursive; 
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: #ffffff; 
             opacity: 0.95;
-            margin-bottom: 0px; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 0.5px;
+            margin-bottom: -10px; 
+            text-shadow: 0 2px 15px rgba(0,0,0,0.8);
             font-weight: 400;
-            position: relative;
-            z-index: 2;
+            position: relative; z-index: 2;
         }
 
-        /* ANA BAŞLIK - SARI */
         .hero-title {
-            font-family: 'Playfair Display', serif; font-size: 5.5rem; 
+            font-family: 'Playfair Display', serif; font-size: 6rem; 
             color: var(--primary);
-            text-shadow: 0 0 50px rgba(252, 211, 77, 0.4); margin: 0;
+            text-shadow: 0 0 60px rgba(252, 211, 77, 0.4); margin: 0;
             text-align: center; letter-spacing: 2px;
             line-height: 1.2;
-            position: relative;
-            z-index: 1;
+            position: relative; z-index: 1;
         }
 
         .hero-subtitle {
-            font-size: 1.1rem; color: #aaa; margin-top: 15px; margin-bottom: 3rem; 
+            font-size: 1rem; color: #ccc; margin-top: 15px; margin-bottom: 3rem; 
             letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;
         }
 
-        /* START BUTTON */
         #start-btn {
-            width: auto; min-width: 160px;
-            padding: 16px 45px; font-size: 1rem; font-weight: 600;
-            background: rgba(252, 211, 77, 0.15); border: 1px solid var(--primary);
+            width: auto; min-width: 180px;
+            padding: 16px 50px; font-size: 1rem; font-weight: 600;
+            background: rgba(252, 211, 77, 0.1); border: 1px solid var(--primary);
             color: var(--primary); border-radius: 50px; cursor: pointer;
             backdrop-filter: blur(5px); transition: all 0.3s ease;
-            text-transform: uppercase; letter-spacing: 1.5px;
+            text-transform: uppercase; letter-spacing: 2px;
         }
         #start-btn:hover {
             background: var(--primary); color: #000; 
             box-shadow: 0 0 40px rgba(252, 211, 77, 0.6); transform: scale(1.05);
         }
 
-        /* UI */
         .app-ui { opacity: 0; visibility: hidden; transition: opacity 0.5s ease 0.5s; position: fixed; z-index: 50; }
 
         #sidebar {
-            top: 20px; right: 20px; width: 340px; 
+            top: 20px; right: 20px; width: 320px; 
             max-height: 90vh; 
             background: var(--panel-bg); backdrop-filter: blur(20px);
             border: 1px solid var(--border); border-radius: 16px;
             display: flex; flex-direction: column;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
-        #sidebar.collapsed { max-height: 60px; background: rgba(15, 23, 42, 0.6); }
+        #sidebar.collapsed { max-height: 60px; background: rgba(15, 23, 42, 0.8); }
 
         .sidebar-header {
             padding: 15px 20px; border-bottom: 1px solid var(--border);
@@ -107,22 +138,17 @@
             cursor: pointer; background: rgba(255,255,255,0.02);
         }
         .sidebar-header:hover { background: rgba(255,255,255,0.05); }
-
-        .sidebar-header h2 {
-            font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0; color: var(--primary);
-        }
+        .sidebar-header h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0; color: var(--primary); }
         
-        #sidebar-toggle-icon {
-            font-size: 0.8rem; color: var(--text-muted); transition: transform 0.3s;
-        }
+        #sidebar-toggle-icon { font-size: 0.8rem; color: var(--text-muted); transition: transform 0.3s; }
         #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
 
-        .sidebar-content {
-            flex: 1; overflow-y: auto; padding: 20px; opacity: 1; transition: opacity 0.3s;
-        }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; opacity: 1; transition: opacity 0.3s; }
         #sidebar.collapsed .sidebar-content { opacity: 0; pointer-events: none; }
+        
         .sidebar-content::-webkit-scrollbar { width: 4px; }
-        .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+        .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
         .section { margin-bottom: 25px; }
         .section-title {
@@ -130,65 +156,34 @@
             letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700;
             display: flex; align-items: center; gap: 8px;
         }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.5; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.3; }
 
         .row { display: flex; gap: 8px; margin-bottom: 10px; }
         .col { flex: 1; }
 
         button {
-            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
             background: rgba(255,255,255,0.05); color: var(--text-main);
-            cursor: pointer; transition: all 0.2s; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; font-size: 0.85rem; font-weight: 600;
             display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px;
         }
-        button:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
-        button.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(99, 179, 237, 0.4); }
+        button:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+        button.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(99, 179, 237, 0.3); }
         button.primary { border-color: var(--primary); color: var(--primary); }
         button.primary:hover { background: var(--primary); color: #000; }
-
-        .btn-paint.active { background: #ff0055; border-color: #ff0055; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+        
+        .btn-paint.active { background: #ff0055; border-color: #ff0055; box-shadow: 0 0 15px rgba(255,0,85,0.3); }
         .btn-ai { border: 1px solid #a855f7; color: #a855f7; background: rgba(168,85,247,0.05); }
         .btn-ai:hover { background: #a855f7; color: #fff; }
-        
-        /* Audio & Auto buttons */
-        .btn-audio.active { 
-            background: #10b981; border-color: #10b981; color: #fff; 
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
-            transition: transform 0.05s; 
-        }
-        .btn-auto.active {
-             background: #f97316; border-color: #f97316; color: #fff;
-             box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
-        }
-
-        /* Video Record Button */
+        .btn-audio.active { background: #10b981; border-color: #10b981; color: #fff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); transition: transform 0.05s; }
+        .btn-auto.active { background: #f97316; border-color: #f97316; color: #fff; box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
         .btn-video { border-color: #ef4444; color: #ef4444; }
         .btn-video:hover { background: #ef4444; color: #fff; }
-        .btn-video.recording { 
-            background: #ef4444; color: #fff; 
-            animation: pulse-red 1s infinite;
-        }
-
+        .btn-video.recording { background: #ef4444; color: #fff; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        input[type="text"], input[type="password"] {
-            width: 100%; padding: 10px; background: rgba(0,0,0,0.4); 
-            border: 1px solid var(--border); border-radius: 6px;
-            color: #fff; font-family: inherit; font-size: 0.85rem; margin-bottom: 8px;
-        }
-        input:focus { outline: none; border-color: var(--primary); }
-
-        /* Sliders */
-        .slider-group { margin-bottom: 15px; }
-        .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
-        input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
-        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
-        
-        /* Shape Selector */
         .shape-btn { font-size: 1.2rem !important; padding: 6px !important; }
-
-        /* Glow Switch */
+        
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
         .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -197,48 +192,23 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        #loading {
-            position: fixed; bottom: 30px; left: 30px;
-            background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px;
-            font-size: 0.8rem; color: var(--primary); letter-spacing: 1px;
-            border: 1px solid var(--border); z-index: 200; display: none;
-        }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-family: inherit; font-size: 0.85rem; margin-bottom: 8px; }
+        input:focus { outline: none; border-color: var(--primary); }
+        
+        .slider-group { margin-bottom: 15px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
 
-        #cursor-guide {
-            position: fixed; pointer-events: none; z-index: 9999;
-            border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
-            transform: translate(-50%, -50%); display: none;
-            mix-blend-mode: difference; transition: width 0.1s, height 0.1s;
-        }
-
-        #notification {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(252, 211, 77, 0.9); color: #000;
-            padding: 10px 20px; border-radius: 30px; font-weight: bold;
-            z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-
-        /* Gemini Modal */
-        #gemini-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px;
-            z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
-            backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6;
-        }
-        #gemini-modal h3 { color: var(--ai-purple); margin-top: 0; display: flex; align-items: center; gap:10px; }
-        #gemini-content { max-height: 300px; overflow-y: auto; margin-bottom: 15px; white-space: pre-wrap; }
+        #loading { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; color: var(--primary); letter-spacing: 1px; border: 1px solid var(--border); z-index: 200; display: none; }
+        #cursor-guide { position: fixed; pointer-events: none; z-index: 9999; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); display: none; mix-blend-mode: difference; transition: width 0.1s, height 0.1s; }
+        #notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: rgba(252, 211, 77, 0.9); color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        
+        #gemini-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px; z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3); backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6; }
         .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
 
-        @media (max-width: 768px) {
-            .hero-title { font-size: 3rem; }
-            #sidebar { 
-                top: auto; bottom: 0; left: 0; right: 0; width: 100%; 
-                height: 60vh; border-radius: 20px 20px 0 0; max-height: 60vh;
-            }
-            #sidebar.collapsed { height: 60px; }
-            #gemini-modal { width: 90%; }
-        }
+        @media (max-width: 768px) { .hero-title { font-size: 3rem; } #sidebar { top: auto; bottom: 0; left: 0; right: 0; width: 100%; height: 60vh; border-radius: 20px 20px 0 0; max-height: 60vh; } #sidebar.collapsed { height: 60px; } #gemini-modal { width: 90%; } }
     </style>
 </head>
 <body>
@@ -247,9 +217,8 @@
     <div id="notification">Action Undone</div>
     <div id="cursor-guide"></div>
 
-    <!-- INTRO SCREEN -->
+    <!-- INTRO -->
     <div id="intro-layer">
-        <!-- YENİLENEN YAZILAR -->
         <div class="poetic-text">The harmonious dance of colors</div>
         <h1 class="hero-title">Van Gogh Studio</h1>
         <div class="hero-subtitle">Interactive Digital Art</div>
@@ -264,7 +233,7 @@
         <button class="btn-ai" onclick="closeModal()" style="width:100%">Close Analysis</button>
     </div>
 
-    <!-- MAIN UI (SIDEBAR) -->
+    <!-- SIDEBAR -->
     <div id="sidebar" class="app-ui">
         <div class="sidebar-header" onclick="toggleSidebar()">
             <h2>Studio Controls</h2>
@@ -274,34 +243,28 @@
         </div>
         
         <div class="sidebar-content">
-            
-            <!-- 1. TOOLS -->
+            <!-- TOOLS -->
             <div class="section">
                 <div class="section-title">Tools & Interaction</div>
                 <div class="row">
                     <button class="col active" id="btn-view" onclick="setTool('view')">👁️ View</button>
                     <button class="col btn-paint" id="btn-paint" onclick="setTool('paint')">🖌️ Brush</button>
                 </div>
-                
-                <!-- Audio & Auto -->
                 <div class="row">
                     <button class="col btn-auto" onclick="toggleAutoPilot()" id="btn-auto">🤖 Auto</button>
                     <button class="col btn-audio" onclick="toggleAudio()" id="btn-audio">🎵 Audio</button>
                 </div>
-
                 <div class="row">
-                    <!-- RANDOM BUTTON -->
                     <button class="col" onclick="randomize()" title="Random Style">🎲 Random</button>
                     <button class="col" onclick="undoAction()" id="btn-undo" style="opacity:0.5">↩️ Undo</button>
                 </div>
                 <button class="col" onclick="resetFlow()" style="margin-top:5px;">❄️ Reset All</button>
             </div>
 
-            <!-- 2. SETTINGS -->
+            <!-- SETTINGS -->
             <div class="section">
                 <div class="section-title">Simulation & Style</div>
                 
-                <!-- Shape Selector -->
                 <div class="slider-group">
                     <div class="slider-label"><span>Particle Shape</span></div>
                     <div style="display:flex; gap:5px;">
@@ -311,7 +274,6 @@
                     </div>
                 </div>
 
-                <!-- Neon Glow Toggle -->
                 <div class="switch-container">
                     <span>✨ Neon Mode</span>
                     <label class="toggle-switch">
@@ -320,14 +282,13 @@
                     </label>
                 </div>
 
-                <!-- DYNAMIC SLIDERS -->
                 <div class="slider-group">
-                    <div class="slider-label"><span>Brush Size</span><span id="val-radius">70px</span></div>
-                    <input type="range" id="radius-slider" min="20" max="200" value="70">
+                    <div class="slider-label"><span>Brush Size</span><span id="val-radius">50px</span></div>
+                    <input type="range" id="radius-slider" min="20" max="200" value="50">
                 </div>
                 <div class="slider-group">
-                    <div class="slider-label"><span>Flow Speed</span><span id="val-speed">5</span></div>
-                    <input type="range" id="speed-slider" min="1" max="10" value="5">
+                    <div class="slider-label"><span>Flow Speed</span><span id="val-speed">3</span></div>
+                    <input type="range" id="speed-slider" min="1" max="10" value="3">
                 </div>
                 <div class="slider-group">
                     <div class="slider-label"><span>Density</span><span id="val-density">Medium</span></div>
@@ -335,28 +296,26 @@
                 </div>
             </div>
 
-            <!-- 3. FILTERS -->
+            <!-- FILTERS -->
             <div class="section">
                 <div class="section-title">Smart Filters</div>
                 <div style="position: relative;">
-                    <input type="text" id="filter-input" placeholder="Type: Fire, Ocean, Forest, Noir..." onkeypress="handleEnter(event)">
+                    <input type="text" id="filter-input" placeholder="Type: Fire, Ocean, Forest..." onkeypress="handleEnter(event)">
                     <button class="btn-ai" onclick="applySmartFilter()" style="width:100%; margin-top: 5px; border-color: #fff; color: #fff;">✨ Apply Filter</button>
                 </div>
-                
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:10px;">
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('fire')">🔥 Fire</button>
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('ocean')">🌊 Ocean</button>
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('forest')">🌲 Forest</button>
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('neon')">🟣 Neon</button>
                     <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('noir')">⚫ Noir</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('original')">↺ Original</button>
+                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('original')">↺ Orig</button>
                 </div>
             </div>
 
-            <!-- 4. SOURCE & AI -->
+            <!-- AI TOOLS -->
             <div class="section">
                 <div class="section-title" style="color: var(--ai-purple);">Gemini AI Tools</div>
-                
                 <div class="row">
                     <button class="col" onclick="document.getElementById('file-input').click()">📂 Upload</button>
                     <button class="col" onclick="shareSettings()">🔗 Share</button>
@@ -365,12 +324,9 @@
 
                 <details open style="margin-top:15px; border:1px dashed var(--ai-purple); padding:10px; border-radius:8px;">
                     <summary style="font-size:0.75rem; cursor:pointer; color:var(--ai-purple); font-weight:bold;">✨ AI Features (API Key)</summary>
-                    
                     <input type="password" id="api-key" placeholder="Paste Gemini API Key Here" style="margin-top:10px;">
                     <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.7rem; color:var(--accent); text-decoration:none; display:block; margin-bottom:15px;">🔑 Get API Key Here</a>
-                    
                     <button class="btn-ai" onclick="analyzeArt()" style="margin-bottom:10px;">👁️ Analyze My Art</button>
-
                     <div style="display:flex; gap:5px; align-items:center;">
                         <input type="text" id="ai-prompt" placeholder="Prompt: A cat in space..." style="margin-bottom:0;">
                         <button class="btn-ai" onclick="enhancePrompt()" title="Magic Prompt" style="width:40px;">🪄</button>
@@ -388,11 +344,23 @@
         </div>
     </div>
 
-    <canvas id="canvas1"></canvas>
+    <!-- 3 LAYERS FOR ULTIMATE DEPTH & COVERAGE -->
+    <div id="canvas-container">
+        <canvas id="canvas-bg-deep"></canvas>
+        <canvas id="canvas-bg-mid"></canvas>
+        <canvas id="canvas-fg"></canvas>
+    </div>
 
 <script>
-    const canvas = document.getElementById('canvas1');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    // Canvas references
+    const canvasDeep = document.getElementById('canvas-bg-deep');
+    const ctxDeep = canvasDeep.getContext('2d');
+    
+    const canvasMid = document.getElementById('canvas-bg-mid');
+    const ctxMid = canvasMid.getContext('2d');
+
+    const canvasFg = document.getElementById('canvas-fg');
+    const ctxFg = canvasFg.getContext('2d', { willReadFrequently: true });
     
     const introLayer = document.getElementById('intro-layer');
     const loadingEl = document.getElementById('loading');
@@ -405,9 +373,6 @@
     const audioBtn = document.getElementById('btn-audio');
     const autoBtn = document.getElementById('btn-auto');
     
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
     let particles = [];
     let flowField = [];
     const flowRes = 15;
@@ -417,12 +382,11 @@
     let currentTool = 'view';
     let isMouseDown = false;
     let isDrawingDirty = false; 
-    let particleDensity = 6; 
+    let particleDensity = 6; // DEFAULT: MEDIUM-FINE
     let particleShape = 'square'; 
     let animationId; 
     let time = 0;
-    
-    let isNeonMode = false; 
+    let isNeonMode = false;
     
     let renderProps = { x: 0, y: 0, w: 0, h: 0 };
 
@@ -437,7 +401,7 @@
     const MAX_HISTORY = 20;
     let tempSnapshot = null;
 
-    let mouse = { x: 0, y: 0, radius: 70, lastX: 0, lastY: 0, vx: 0, vy: 0 };
+    let mouse = { x: 0, y: 0, radius: 50, lastX: 0, lastY: 0, vx: 0, vy: 0 };
     let currentPalette = null; 
     let userApiKey = localStorage.getItem('gemini_api_key') || "";
 
@@ -454,6 +418,7 @@
         sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
         
         sourceImage.onload = () => {
+            resizeCanvases();
             processImage();
             if (!animationId) animate();
 
@@ -470,6 +435,14 @@
             loadingEl.style.display = 'block';
             loadingEl.innerText = "Error loading default image.";
         }
+    }
+
+    function resizeCanvases() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        canvasDeep.width = w; canvasDeep.height = h;
+        canvasMid.width = w; canvasMid.height = h;
+        canvasFg.width = w; canvasFg.height = h;
     }
 
     function startApp() {
@@ -501,25 +474,21 @@
     }
     
     function randomize() {
+        saveState(); 
         const filters = ['fire', 'ocean', 'neon', 'gold', 'forest', 'noir'];
         const randFilter = filters[Math.floor(Math.random() * filters.length)];
         
-        // Apply filter
         document.getElementById('filter-input').value = randFilter;
         quickFilter(randFilter);
         
-        // Random Shape
         const shapes = ['square', 'circle', 'line'];
         const randShape = shapes[Math.floor(Math.random() * shapes.length)];
         const shapeBtn = document.querySelectorAll('.shape-btn')[shapes.indexOf(randShape)];
         setShape(randShape, shapeBtn);
 
-        // Random Speed
-        const randSpeed = Math.floor(Math.random() * 8) + 2;
+        const randSpeed = Math.floor(Math.random() * 6) + 2; 
         document.getElementById('speed-slider').value = randSpeed;
         document.getElementById('val-speed').innerText = randSpeed;
-        
-        saveState();
     }
 
     async function toggleAudio() {
@@ -529,14 +498,9 @@
             audioBtn.style.transform = "scale(1)";
             return;
         }
-        
         try {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContext.state === 'suspended') {
-                await audioContext.resume();
-            }
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioContext.state === 'suspended') await audioContext.resume();
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const source = audioContext.createMediaStreamSource(stream);
             analyser = audioContext.createAnalyser();
@@ -555,10 +519,7 @@
         url.searchParams.set('d', particleDensity);
         const filterVal = document.getElementById('filter-input').value;
         if(filterVal) url.searchParams.set('f', filterVal);
-        
-        navigator.clipboard.writeText(url.toString()).then(() => {
-            showNotification("Link Copied!");
-        });
+        navigator.clipboard.writeText(url.toString()).then(() => { showNotification("Link Copied!"); });
     }
 
     // --- AI FEATURES ---
@@ -569,19 +530,17 @@
         loadingEl.style.display = 'block';
         loadingEl.innerText = "ANALYZING ART...";
         try {
-            const base64Image = canvas.toDataURL("image/jpeg", 0.5).split(',')[1];
+            // Capture combined view
+            const combined = document.createElement('canvas');
+            combined.width = canvasFg.width; combined.height = canvasFg.height;
+            const cCtx = combined.getContext('2d');
+            cCtx.drawImage(canvasMid, 0, 0); 
+            cCtx.drawImage(canvasFg, 0, 0);
+            
+            const base64Image = combined.toDataURL("image/jpeg", 0.5).split(',')[1];
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: "Act as an art critic. Analyze this image. Describe the composition, color palette, and emotional atmosphere in a poetic and artistic way. Keep it concise (max 50 words)." },
-                        { inlineData: { mimeType: "image/jpeg", data: base64Image } }
-                    ]
-                }]
-            };
-            const response = await fetch(url, {
-                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
-            });
+            const payload = { contents: [{ parts: [{ text: "Act as an art critic. Analyze this image. Describe the composition, color palette, and emotional atmosphere in a poetic and artistic way. Keep it concise (max 50 words)." }, { inlineData: { mimeType: "image/jpeg", data: base64Image } }] }] };
+            const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await response.json();
             const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Could not analyze.";
             modalContent.innerText = text;
@@ -599,9 +558,7 @@
         loadingEl.innerText = "ENHANCING...";
         try {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: `Rewrite this short art prompt into a detailed, vivid, artistic description suitable for generative art. Input: "${current}". Output only the new prompt.` }] }]
-            };
+            const payload = { contents: [{ parts: [{ text: `Rewrite this short art prompt into a detailed, vivid, artistic description suitable for generative art. Input: "${current}". Output only the new prompt.` }] }] };
             const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
             const data = await response.json();
             promptInput.value = data.candidates?.[0]?.content?.parts?.[0]?.text.trim();
@@ -619,9 +576,7 @@
         try {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`;
             const fullPrompt = `Create a colorful SVG code (square ratio) for: "${prompt}". Return ONLY raw <svg> code. No markdown. No backticks. Just the code.`;
-            const response = await fetch(url, {
-                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] })
-            });
+            const response = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: fullPrompt }] }] }) });
             const data = await response.json();
             let svg = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if(svg) {
@@ -642,36 +597,57 @@
     function processImage() {
         if (!sourceImage.width) return;
 
-        const scale = Math.max(canvas.width / sourceImage.width, canvas.height / sourceImage.height);
-        renderProps.w = sourceImage.width * scale;
-        renderProps.h = sourceImage.height * scale;
-        renderProps.x = (canvas.width - renderProps.w) / 2;
-        renderProps.y = (canvas.height - renderProps.h) / 2;
+        // 1. Smart Fit: Contain (Whole image visible) but scale to fill mostly
+        const scaleContain = Math.min(canvasFg.width / sourceImage.width, canvasFg.height / sourceImage.height);
+        renderProps = {
+            w: sourceImage.width * scaleContain,
+            h: sourceImage.height * scaleContain,
+            x: (canvasFg.width - (sourceImage.width * scaleContain)) / 2,
+            y: (canvasFg.height - (sourceImage.height * scaleContain)) / 2
+        };
+        
+        // 2. Cover Props for Background (Fill screen)
+        const scaleCover = Math.max(canvasFg.width / sourceImage.width, canvasFg.height / sourceImage.height);
+        let coverProps = {
+            w: sourceImage.width * scaleCover,
+            h: sourceImage.height * scaleCover,
+            x: (canvasFg.width - (sourceImage.width * scaleCover)) / 2,
+            y: (canvasFg.height - (sourceImage.height * scaleCover)) / 2
+        }
 
-        ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
-        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // DRAW LAYERS
+        ctxDeep.clearRect(0, 0, canvasDeep.width, canvasDeep.height);
+        ctxDeep.drawImage(sourceImage, coverProps.x, coverProps.y, coverProps.w, coverProps.h);
+        
+        ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
+        ctxMid.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+
+        ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height);
+        ctxFg.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+        const pixels = ctxFg.getImageData(0, 0, canvasFg.width, canvasFg.height);
+        ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height); 
         
         initFlowField();
         initParticles(pixels);
-        
         historyStack = []; 
         saveState(); 
     }
 
     function initFlowField() {
         flowField = [];
-        rows = Math.ceil(canvas.height / flowRes);
-        cols = Math.ceil(canvas.width / flowRes);
+        rows = Math.ceil(canvasFg.height / flowRes);
+        cols = Math.ceil(canvasFg.width / flowRes);
         for (let i = 0; i < rows * cols; i++) flowField.push(null);
     }
 
     function initParticles(pixels) {
         particles = [];
         const gap = particleDensity;
-        for (let y = 0; y < canvas.height; y += gap) {
-            for (let x = 0; x < canvas.width; x += gap) {
-                if(gap < 4 && Math.random() > 0.8) continue;
+        for (let y = 0; y < canvasFg.height; y += gap) {
+            for (let x = 0; x < canvasFg.width; x += gap) {
+                // Keep it dense for oil paint look
+                if(gap < 3 && Math.random() > 0.95) continue;
+                
                 const index = (y * pixels.width + x) * 4;
                 const alpha = pixels.data[index + 3];
                 if (alpha > 128) {
@@ -698,11 +674,14 @@
             this.color = color;
             this.originalColor = color;
             this.brightness = brightness;
-            this.baseSize = Math.max(particleDensity * 0.8, brightness * particleDensity * 1.5);
+            
+            // SIZE FIX: Small and Elegant (Gap filled by underpainting)
+            this.baseSize = Math.max(particleDensity * 1.2, brightness * particleDensity * 1.8);
+            
             this.vx = 0; 
             this.vy = 0;
             this.speedMod = Math.random() * 0.6 + 0.4;
-            this.angle = 0; // Fix: Start flat
+            this.angle = 0; 
         }
 
         update(speedFactor) {
@@ -718,118 +697,123 @@
                 hasFlow = true;
             }
 
-            // Auto Pilot
-            if(isAutoPilot) {
-                const t = time * 0.001;
-                const noiseX = Math.sin(this.y * 0.005 + t) * 0.03;
-                const noiseY = Math.cos(this.x * 0.005 + t) * 0.03;
-                this.vx += noiseX;
-                this.vy += noiseY;
-            }
-
-            // AUDIO: WAVE MOTION
-            if(isAudioActive) {
-                if (audioLevel > 5) {
-                     const wave = Math.sin(this.y * 0.05 + time * 0.1) * (audioLevel / 200);
-                     this.vx += wave * 0.5; 
-                     if(hasFlow) {
-                         this.vx *= (1 + audioLevel/100);
-                         this.vy *= (1 + audioLevel/100);
-                     }
-                } else {
-                    // Silence = Freeze
-                    this.vx *= 0.5; 
-                    this.vy *= 0.5;
-                    this.x += (this.originX - this.x) * 0.1;
-                    this.y += (this.originY - this.y) * 0.1;
-                }
-            }
-
-            if (!hasFlow && !isAutoPilot && !isAudioActive) {
-                const dx = this.originX - this.x;
-                const dy = this.originY - this.y;
-                this.vx += dx * 0.05;
-                this.vy += dy * 0.05;
-                this.vx *= 0.8; 
-                this.vy *= 0.8;
-            } else {
-                const maxSpeed = speedFactor * this.speedMod;
-                this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
-                this.vy = Math.max(Math.min(this.vy, maxSpeed), -maxSpeed);
-            }
-
-            if (currentTool === 'view' && mouse.x !== 0) {
+            // View Mode: Very Gentle Ripple (Transient)
+            if(currentTool === 'view' && mouse.x !== 0) {
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist < mouse.radius) {
                     const force = (mouse.radius - dist) / mouse.radius;
                     const angle = Math.atan2(dy, dx);
-                    const push = 2;
+                    // Very gentle push (0.3)
+                    const push = 0.3; 
                     this.vx -= Math.cos(angle) * force * push;
                     this.vy -= Math.sin(angle) * force * push;
                 }
             }
 
-            // Fix jitter
+            // Auto Pilot
+            if(isAutoPilot) {
+                const t = time * 0.001;
+                const noiseX = Math.sin(this.y * 0.005 + t) * 0.03;
+                const noiseY = Math.cos(this.x * 0.005 + t) * 0.03;
+                this.vx += noiseX; this.vy += noiseY;
+            }
+
+            // AUDIO SENSOR (Strict)
+            if(isAudioActive) {
+                if (audioLevel < 10) { 
+                    // Freeze
+                    this.vx *= 0.1; this.vy *= 0.1;
+                    this.x += (this.originX - this.x) * 0.1;
+                    this.y += (this.originY - this.y) * 0.1;
+                } else {
+                    // Pulse
+                    let energy = audioLevel / 50; 
+                    if(hasFlow) {
+                         this.vx *= (1 + energy);
+                         this.vy *= (1 + energy);
+                     } else {
+                         this.x += (Math.random() - 0.5) * energy;
+                         this.y += (Math.random() - 0.5) * energy;
+                     }
+                }
+            }
+
+            // If no interaction, return home fast (Transient effect)
+            if (!hasFlow && !isAutoPilot && !isAudioActive && !(currentTool === 'view' && mouse.x !== 0)) {
+                const dx = this.originX - this.x;
+                const dy = this.originY - this.y;
+                this.vx += dx * 0.05;
+                this.vy += dy * 0.05;
+                // High friction for fast return
+                this.vx *= 0.6; 
+                this.vy *= 0.6;
+            } else {
+                const maxSpeed = speedFactor * this.speedMod;
+                this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
+                this.vy = Math.max(Math.min(this.vy, maxSpeed), -maxSpeed);
+            }
+
+            // Stop micro-jitter
             if (Math.abs(this.vx) < 0.01) this.vx = 0;
             if (Math.abs(this.vy) < 0.01) this.vy = 0;
 
             this.x += this.vx;
             this.y += this.vy;
 
+            // Boundaries
             const distHome = Math.sqrt(Math.pow(this.x - this.originX, 2) + Math.pow(this.y - this.originY, 2));
-            if ((hasFlow || isAutoPilot || (isAudioActive && audioLevel > 5)) && distHome > 30) {
+            if ((hasFlow || isAutoPilot || (isAudioActive && audioLevel > 10)) && distHome > 30) {
                  this.x = this.originX;
                  this.y = this.originY;
             }
             
-            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            if (this.x < 0 || this.x > canvasFg.width || this.y < 0 || this.y > canvasFg.height) {
                 this.x = this.originX; this.y = this.originY;
             }
             
-            // Update angle only if moving
             if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
                 this.angle = Math.atan2(this.vy, this.vx);
             } else if (!isAudioActive && !isAutoPilot) {
-                // If stopped, reset to 0 for clean lines
                  if(Math.abs(this.vx) < 0.1 && Math.abs(this.vy) < 0.1) this.angle = 0;
             }
         }
 
         draw() {
-            // NEON GLOW (SHADOW)
             if(isNeonMode) {
-                ctx.shadowBlur = 10; 
-                ctx.shadowColor = this.color;
-                // 'screen' modu yerine 'source-over' kullanıyoruz ki beyazlama olmasın.
-                // Parlaklık shadowBlur ile sağlanıyor.
-                ctx.globalCompositeOperation = 'source-over'; 
+                ctxFg.shadowBlur = 5; 
+                ctxFg.shadowColor = this.color;
+                ctxFg.globalCompositeOperation = 'screen'; 
             } else {
-                ctx.shadowBlur = 0;
-                ctx.globalCompositeOperation = 'source-over';
+                ctxFg.shadowBlur = 0;
+                ctxFg.globalCompositeOperation = 'source-over';
             }
             
-            ctx.fillStyle = this.color;
-            ctx.strokeStyle = this.color;
+            ctxFg.fillStyle = this.color;
+            ctxFg.strokeStyle = this.color;
             let size = this.baseSize;
 
             if(particleShape === 'square') {
-                ctx.fillRect(this.x, this.y, size, size);
+                // Slight overlap
+                ctxFg.fillRect(this.x, this.y, size + 0.5, size + 0.5);
             } else if (particleShape === 'circle') {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, size/2, 0, Math.PI*2);
-                ctx.fill();
+                ctxFg.beginPath();
+                ctxFg.arc(this.x, this.y, size/2, 0, Math.PI*2);
+                ctxFg.fill();
             } else if (particleShape === 'line') {
-                ctx.lineWidth = size/2;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
+                ctxFg.lineWidth = size/2;
+                ctxFg.beginPath();
+                ctxFg.moveTo(this.x, this.y);
                 const lineLen = size * 2;
-                ctx.lineTo(this.x + Math.cos(this.angle)*lineLen, this.y + Math.sin(this.angle)*lineLen);
-                ctx.stroke();
+                ctxFg.lineTo(this.x + Math.cos(this.angle)*lineLen, this.y + Math.sin(this.angle)*lineLen);
+                ctxFg.stroke();
             }
             
-            if(isNeonMode) ctx.shadowBlur = 0;
+            if(isNeonMode) {
+                ctxFg.shadowBlur = 0;
+                ctxFg.globalCompositeOperation = 'source-over';
+            }
         }
     }
 
@@ -848,15 +832,7 @@
             audioLevel = 0;
         }
 
-        if (sourceImage.complete && sourceImage.naturalWidth !== 0) {
-            // Darker background in Neon Mode
-            ctx.globalAlpha = isNeonMode ? 0.4 : 0.15; 
-            ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
-            ctx.globalAlpha = 1.0; 
-        } else {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height);
         
         if(particles.length > 0) {
             for(let i=0; i<particles.length; i++) {
@@ -872,27 +848,35 @@
         if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
 
         const angle = Math.atan2(dy, dx);
-        const rCells = Math.ceil(mouse.radius / flowRes);
-        const cCol = Math.floor(mouse.x / flowRes);
-        const cRow = Math.floor(mouse.y / flowRes);
+        const distMoved = Math.sqrt(dx*dx + dy*dy);
+        const steps = Math.max(1, Math.ceil(distMoved / (flowRes/2))); 
 
-        for (let y = -rCells; y <= rCells; y++) {
-            for (let x = -rCells; x <= rCells; x++) {
-                const col = cCol + x;
-                const row = cRow + y;
-                if (col >= 0 && col < cols && row >= 0 && row < rows) {
-                    const dist = Math.sqrt(x*x + y*y) * flowRes;
-                    if (dist < mouse.radius) {
-                        const idx = col + row * cols;
-                        flowField[idx] = angle; 
-                        isDrawingDirty = true;
+        for(let i=0; i<=steps; i++) {
+            const lerpX = mouse.lastX + (dx * i / steps);
+            const lerpY = mouse.lastY + (dy * i / steps);
+            
+            const rCells = Math.ceil(mouse.radius / flowRes);
+            const cCol = Math.floor(lerpX / flowRes);
+            const cRow = Math.floor(lerpY / flowRes);
+
+            for (let y = -rCells; y <= rCells; y++) {
+                for (let x = -rCells; x <= rCells; x++) {
+                    const col = cCol + x;
+                    const row = cRow + y;
+                    if (col >= 0 && col < cols && row >= 0 && row < rows) {
+                        const dist = Math.sqrt(x*x + y*y) * flowRes;
+                        if (dist < mouse.radius) {
+                            const idx = col + row * cols;
+                            flowField[idx] = angle; 
+                        }
                     }
                 }
             }
         }
+        mouse.lastX = mouse.x;
+        mouse.lastY = mouse.y;
     }
 
-    // --- UNDO SYSTEM ---
     function createSnapshot() {
         return {
             flow: [...flowField],
@@ -914,7 +898,6 @@
     function undoAction() {
         if(historyStack.length > 0) {
             const state = historyStack.pop(); 
-            
             flowField = [...state.flow];
             currentPalette = state.palette ? [...state.palette] : null;
             
@@ -923,13 +906,9 @@
                 p.x = p.originX; p.y = p.originY;
                 if (currentPalette) applyColorToParticle(p, currentPalette);
                 else p.color = p.originalColor;
-                p.angle = 0; // Reset angle on undo
+                p.angle = 0; 
             });
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (sourceImage.complete) {
-                ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
-            }
             showNotification("Undo Successful");
             updateUndoBtn();
         } else {
@@ -954,14 +933,11 @@
         });
         currentPalette = null;
         
-        // STOP ALL
         isAutoPilot = false; document.getElementById('btn-auto').classList.remove('active');
         if(isAudioActive) { isAudioActive = false; audioBtn.classList.remove('active'); }
         isNeonMode = false; document.getElementById('glow-switch').checked = false;
         document.getElementById('filter-input').value = '';
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
         showNotification("Reset Complete");
     }
 
@@ -1047,8 +1023,7 @@
     }
 
     window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        resizeCanvases();
         processImage();
     });
 
@@ -1060,6 +1035,9 @@
             cursorGuide.style.top = e.clientY + 'px';
             if(isMouseDown) paintFlow();
         }
+        // Always track for view mode effect
+        mouse.lastX = mouse.x;
+        mouse.lastY = mouse.y;
     });
 
     window.addEventListener('mousedown', () => {
@@ -1069,6 +1047,8 @@
             isDrawingDirty = false; 
             cursorGuide.style.borderColor = '#ff0055';
             cursorGuide.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            mouse.lastX = mouse.x;
+            mouse.lastY = mouse.y;
         }
     });
 
@@ -1105,9 +1085,17 @@
     });
 
     window.saveSnapshot = function() {
+        const combinedCanvas = document.createElement('canvas');
+        combinedCanvas.width = canvasFg.width;
+        combinedCanvas.height = canvasFg.height;
+        const combinedCtx = combinedCanvas.getContext('2d');
+        combinedCtx.drawImage(canvasDeep, 0, 0);
+        combinedCtx.drawImage(canvasMid, 0, 0);
+        combinedCtx.drawImage(canvasFg, 0, 0);
+
         const link = document.createElement('a');
         link.download = 'van-gogh-studio-art.png';
-        link.href = canvas.toDataURL();
+        link.href = combinedCanvas.toDataURL();
         link.click();
     }
 
