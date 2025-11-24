@@ -1,8 +1,8 @@
 # 🎨 Van Gogh Studio - Ultimate Edition
 
-**Van Gogh Studio**, Vincent van Gogh’un impasto tekniğinden ilham alan, statik görüntüleri yaşayan parçaçık simülasyonlarına dönüştüren etkileşimli ve üretken bir sanat uygulamasıdır.
+**Van Gogh Studio** is an interactive and generative art application inspired by Vincent van Gogh’s impasto technique, transforming static images into living particle simulations.
 
-Bu proje, klasik bilgisayar grafikleri algoritmalarını (Flow Fields) modern Üretken Yapay Zekâ (Google Gemini) ile birleştirerek benzersiz bir dijital sanat deneyimi sunar.
+The project blends classic computer graphics algorithms (Flow Fields) with modern Generative AI (Google Gemini) to deliver a unique digital art experience.
 
 🔗 **Live Demo:**  
 https://Fatmanurkntr.github.io/van-gogh-studio/
@@ -12,61 +12,62 @@ https://Fatmanurkntr.github.io/van-gogh-studio/
 ## ✨ Key Features (What You Can Do)
 
 ### 1. 🖌️ Interactive Painting & Animation
-- **Living Canvas:** Görsel sabit değil; görüntü verisine göre sıvı gibi akar.  
-- **Magic Brush:** Fare veya dokunmatik ekran ile “canlandırma” hareketi yapabilirsin.  
-- **Freeze & Flow:** Simülasyonu dondur veya akmaya bırak.
+- **Living Canvas:** The artwork isn’t static; it flows based on the underlying image data.  
+- **Magic Brush:** Bring your canvas to life using mouse or touch gestures.  
+- **Freeze & Flow:** Pause the simulation or let it move freely.
 
 ### 2. 🎵 Audio Reactive Art
-- **Dance with Music:** Mikrofonu aç, sanat eserin müziğin ritmiyle hareket etsin.  
-- **Bass & Rhythm:** Bas seslerde parçacıklar hızlanır; müzik durunca sakinleşir.
+- **Dance with Music:** Enable the microphone—your artwork will move in sync with the rhythm.  
+- **Bass & Dynamics:** Strong bass speeds up particles; silence makes them settle.
 
 ### 3. 🧠 Hybrid AI Capabilities
 - **Smart Filters (No API Required):**  
-  “Fire”, “Ocean”, “Forest”, “Matrix” gibi kelimelerle anında renk paleti değiştir.  
+  Instantly change color palettes with simple words like “Fire”, “Ocean”, “Forest”, or “Matrix”.  
 - **Gemini Art Critic:**  
-  Yaptığın tabloyu analiz edip şiirsel yorumlar üretebilir.  
+  Get poetic AI-generated critiques of your artwork.  
 - **Generative Art (Pro):**  
-  Metin açıklamalarından yeni SVG görüntüler oluştur (örnek: *“A cyberpunk city in Van Gogh style”*).
+  Turn text prompts into new SVG visuals (example: *“A cyberpunk city in Van Gogh style”*).
 
 ### 4. ⏪ Time Travel (Robust Undo System)
 - **Step-by-Step Undo:**  
-  Fırça hatalarını veya filtre değişikliklerini tek tek geriye al.  
+  Reverse brush movements and filter changes smoothly.  
 - **Snapshot Memory:**  
-  Her parçacığın konumu kaydedildiği için pürüzsüz geri sarma mümkündür.
+  Because every particle state is stored, rewinding looks natural and seamless.
 
 ### 5. 🛠️ Customization Studio
-- Parçacık yoğunluğu (pixel size), akış hızı (viscosity), fırça yarıçapını anlık değiştir.  
-- **Shape Shifting:** Square, Circle veya Line parçacık tipleri.  
-- **Export:** Yüksek çözünürlüklü PNG indirme veya 5 saniyelik video kaydı.
+- Adjust particle density, flow speed (viscosity), and brush radius in real time.  
+- **Shape Shifting:** Switch between Square, Circle, or Line particle types.  
+- **Export:** Save high-resolution PNG images or record 5-second videos.
 
 ---
 
 ## 🔧 How It Works (The Engineering)
 
-Bu proje, tamamen **Vanilla JavaScript** ve **HTML5 Canvas API** ile, çekirdek motorda hiçbir dış bağımlılık olmadan geliştirildi.
+This project is built entirely with **Vanilla JavaScript** and the **HTML5 Canvas API**, with zero dependencies in the core engine.
 
 ### 1. Flow Field Algorithm
 - **Luminance Calculation:**  
-  Her pikselin parlaklığı şöyle hesaplanır: `0.299R + 0.587G + 0.114B`
+  Each pixel’s brightness is computed as:  
+  `0.299R + 0.587G + 0.114B`
 - **Vector Mapping:**  
-  Parlak piksel → belirli bir açıya sahip akış vektörü.  
+  Brightness values map to directional flow vectors.  
 - **Particle Physics:**  
-  Binlerce parçacık bu görünmez vektörleri takip eder ve “rüzgârla akan fırça darbeleri” efekti oluşur.
+  Thousands of particles follow these invisible vectors, creating a “wind-like brushstroke” effect.
 
 ### 2. "Tethered Flow" Physics
-- **Liquid Motion:** Parçacıklar fırça hareket yönünde akar.  
+- **Liquid Motion:** Particles drift smoothly in the direction of brush movement.  
 - **Form Retention:**  
-  Parçacıklar kaçıp kaybolmaz; orijinal konumlarına geri dönerler.  
+  They never escape the artwork; they return to their origin points.  
 - **Underpainting:**  
-  Arkaplan katmanı siyah boşluk oluşmasını engeller.
+  Background layers prevent empty black areas.
 
 ### 3. Hybrid AI Integration
 - **Local Logic (Free):**  
-  Kelime → renk paleti dönüşümü için yerel hashing algoritması.  
+  A hashing-based system creates color palettes from simple text.  
 - **Remote API (Google Gemini):**  
-  - Görüntü üretimi  
-  - Sanat analizi  
-  - SVG işleme  
+  - Image generation  
+  - Art analysis  
+  - SVG rendering  
 
 ---
 
@@ -82,3 +83,10 @@ Bu proje, tamamen **Vanilla JavaScript** ve **HTML5 Canvas API** ile, çekirdek 
 
 ```bash
 git clone https://github.com/Fatmanurkntr/van-gogh-studio.git
+```
+
+Open `index.html` in any modern browser to start the app.
+
+
+
+
