@@ -19,27 +19,33 @@
         * { box-sizing: border-box; }
 
         html, body {
-            margin: 0; 
-            padding: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
             background-color: var(--dark-bg);
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
             font-family: 'Inter', sans-serif;
             color: var(--text-main);
-            user-select: none;
-            touch-action: none;
+            user-select: none; touch-action: none;
+            
+            /* 1. SABİT RESMİ EN ARKAYA KOYUYORUZ (Anında açılır) */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        /* Container for stacked canvases */
+        /* Container for stacked canvases with Zoom support */
+        /* Container for stacked canvases with Zoom support */
         #canvas-container {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            transform-origin: center center;
+            
+            /* 2. BAŞLANGIÇTA GİZLİYORUZ (Glitch gözükmesin diye) */
+            opacity: 0; 
+            
+            /* Opacity için geçiş efekti ekledik */
+            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+            
+            /* Container üzerindeki background-image'ı kaldırdık, body'de var zaten */
         }
 
         canvas { 
@@ -47,24 +53,27 @@
             top: 0; left: 0; 
             width: 100%; 
             height: 100%; 
+            /* Pikselleşmeyi önlemek için yumuşatma */
+            image-rendering: auto; 
+            image-rendering: -webkit-optimize-contrast;
         }
         
-        /* Layer 1: Deep Blur Background (Fills Screen) */
+        /* Layer 1: Deep Blur Background */
         #canvas-bg-deep {
             z-index: 0;
-            filter: blur(40px) brightness(0.4); 
+            /* Blur'u azalttık ki daha net olsun */
+            filter: blur(10px) brightness(0.6); 
             object-fit: cover;
         }
 
-        /* Layer 2: Mid Background (The Form / Underpainting) */
+        /* Layer 2: Mid Background */
         #canvas-bg-mid {
             z-index: 1;
-            /* Reduced blur for better form definition underneath */
-            filter: blur(4px) brightness(0.8); 
+            filter: blur(2px) brightness(0.9); 
             opacity: 1.0; 
         }
 
-        /* Layer 3: Particles (Texture) */
+        /* Layer 3: Particles */
         #canvas-fg {
             z-index: 2;
         }
@@ -74,20 +83,21 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100;
-            background: rgba(0, 0, 0, 0.75); 
-            backdrop-filter: blur(10px);
+            
+            /* 1. RENK GEÇİŞİ (Vignette) - Daha aydınlık */
+            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.5) 100%);
+            
+            /* 2. BLUR (Yumuşatma) - Kareleri yok eder */
+            backdrop-filter: blur(4px); 
+            
             transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        .poetic-text {
-            font-family: 'Courgette', cursive; 
-            font-size: 2.5rem;
-            color: #ffffff; 
-            opacity: 0.95;
-            margin-bottom: -10px; 
-            text-shadow: 0 2px 15px rgba(0,0,0,0.8);
-            font-weight: 400;
-            position: relative; z-index: 2;
+        /* --- YAZI DALGALANMA ANİMASYONU (KESİN) --- */
+        @keyframes floatText {
+            0%   { transform: translateY(0px); opacity: 0.9; }
+            50%  { transform: translateY(-15px); opacity: 1; }
+            100% { transform: translateY(0px); opacity: 0.9; }
         }
 
         .hero-title {
@@ -97,11 +107,28 @@
             text-align: center; letter-spacing: 2px;
             line-height: 1.2;
             position: relative; z-index: 1;
+            animation: floatText 6s ease-in-out infinite;
         }
 
         .hero-subtitle {
             font-size: 1rem; color: #ccc; margin-top: 15px; margin-bottom: 3rem; 
             letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;
+            position: relative;
+            animation: floatText 5s ease-in-out infinite;
+            animation-delay: 1.5s;
+        }
+        
+        .poetic-text {
+            font-family: 'Courgette', cursive; 
+            font-size: 2.5rem;
+            color: #ffffff; 
+            opacity: 0.95;
+            margin-bottom: -10px; 
+            text-shadow: 0 2px 15px rgba(0,0,0,0.8);
+            font-weight: 400;
+            position: relative; z-index: 2;
+            animation: floatText 7s ease-in-out infinite;
+            animation-delay: 0.5s;
         }
 
         #start-btn {
@@ -129,7 +156,6 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
-
         #sidebar.collapsed { max-height: 60px; background: rgba(15, 23, 42, 0.8); }
 
         .sidebar-header {
@@ -202,9 +228,33 @@
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
 
         #loading { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; color: var(--primary); letter-spacing: 1px; border: 1px solid var(--border); z-index: 200; display: none; }
-        #cursor-guide { position: fixed; pointer-events: none; z-index: 9999; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); display: none; mix-blend-mode: difference; transition: width 0.1s, height 0.1s; }
+        
+        #cursor-guide { 
+            position: fixed; 
+            top: 0; left: 0; 
+            pointer-events: none; 
+            z-index: 9999; 
+            border: 2px solid rgba(255,255,255,0.8); 
+            border-radius: 50%; 
+            display: none; 
+            mix-blend-mode: difference; 
+            transition: width 0.1s, height 0.1s;
+            will-change: transform; 
+        }
+        
         #notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: rgba(252, 211, 77, 0.9); color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         
+        #flash-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            opacity: 0; pointer-events: none; z-index: 1000;
+            transition: opacity 0.1s ease-out; 
+            mix-blend-mode: overlay; 
+        }
+        
+        @keyframes spin-back { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+        .anim-spin-back { animation: spin-back 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
         #gemini-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px; z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3); backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6; }
         .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
 
@@ -261,10 +311,11 @@
                 <button class="col" onclick="resetFlow()" style="margin-top:5px;">❄️ Reset All</button>
             </div>
 
-            <!-- SETTINGS -->
+           <!-- SETTINGS -->
             <div class="section">
                 <div class="section-title">Simulation & Style</div>
                 
+                <!-- 1. PARTICLE SHAPE (GERİ GELDİ) -->
                 <div class="slider-group">
                     <div class="slider-label"><span>Particle Shape</span></div>
                     <div style="display:flex; gap:5px;">
@@ -274,6 +325,7 @@
                     </div>
                 </div>
 
+                <!-- 2. NEON MODE -->
                 <div class="switch-container">
                     <span>✨ Neon Mode</span>
                     <label class="toggle-switch">
@@ -282,34 +334,56 @@
                     </label>
                 </div>
 
+                <!-- 3. BRUSH SIZE -->
                 <div class="slider-group">
-                    <div class="slider-label"><span>Brush Size</span><span id="val-radius">50px</span></div>
-                    <input type="range" id="radius-slider" min="20" max="200" value="50">
+                    <div class="slider-label"><span>Brush Size</span><span id="val-radius">20px</span></div>
+                    <input type="range" id="radius-slider" min="0" max="50" value="20">
                 </div>
+
+                <!-- 4. FLOW SPEED -->
                 <div class="slider-group">
-                    <div class="slider-label"><span>Flow Speed</span><span id="val-speed">3</span></div>
-                    <input type="range" id="speed-slider" min="1" max="10" value="3">
+                    <div class="slider-label"><span>Flow Speed</span><span id="val-speed">2</span></div>
+                    <input type="range" id="speed-slider" min="1" max="10" value="2">
                 </div>
+
+                <!-- 5. DENSITY (DİNAMİK YAZILI HALİ) -->
                 <div class="slider-group">
-                    <div class="slider-label"><span>Density</span><span id="val-density">Medium</span></div>
-                    <input type="range" id="density-slider" min="3" max="12" value="6" onchange="reloadDensity()">
+                    <div class="slider-label">
+                        <span>Density</span>
+                        <!-- Yazı buraya gelecek (High Detail vb.) -->
+                        <span id="val-density" style="color: var(--primary);">High Detail</span>
+                    </div>
+                    <!-- oninput ekledik: Sürüklerken yazı değişsin -->
+                    <input type="range" id="density-slider" min="3" max="15" value="6" 
+                           oninput="updateDensityText(this.value)" 
+                           onchange="reloadDensity()">
                 </div>
             </div>
 
-            <!-- FILTERS -->
+           <!-- MODERN COLOR STUDIO -->
             <div class="section">
-                <div class="section-title">Smart Filters</div>
-                <div style="position: relative;">
-                    <input type="text" id="filter-input" placeholder="Type: Fire, Ocean, Forest..." onkeypress="handleEnter(event)">
-                    <button class="btn-ai" onclick="applySmartFilter()" style="width:100%; margin-top: 5px; border-color: #fff; color: #fff;">✨ Apply Filter</button>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:10px;">
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('fire')">🔥 Fire</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('ocean')">🌊 Ocean</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('forest')">🌲 Forest</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('neon')">🟣 Neon</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('noir')">⚫ Noir</button>
-                    <button style="font-size:0.7rem; padding:8px;" onclick="quickFilter('original')">↺ Orig</button>
+                <div class="section-title">Color Studio (RGB)</div>
+                
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                    <!-- Renk Seçim Alanı -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 5px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                        <span style="font-size: 0.8rem; color: #ccc; margin-left: 10px;">Select Theme Color</span>
+                        <input type="color" id="custom-color-picker" value="#63b3ed" 
+                               style="width: 40px; height: 30px; border: none; background: transparent; cursor: pointer;">
+                    </div>
+                    
+                    <!-- Butonlar (Daha şık ve geniş) -->
+                    <button class="primary" onclick="applyCustomColor()" style="margin-bottom: 8px; font-size: 0.9rem;">
+                        ✨ Apply Filter
+                    </button>
+                    
+                    <button onclick="resetToOriginal()" style="border-color: rgba(255, 85, 85, 0.5); color: #ff8888;">
+                        ↺ Reset to Original
+                    </button>
+                    
+                    <div style="margin-top: 12px; font-size: 0.7rem; color: #64748b; text-align: center;">
+                        <span style="opacity:0.7">Backdrops will dim to highlight art.</span>
+                    </div>
                 </div>
             </div>
 
@@ -318,8 +392,7 @@
                 <div class="section-title" style="color: var(--ai-purple);">Gemini AI Tools</div>
                 <div class="row">
                     <button class="col" onclick="document.getElementById('file-input').click()">📂 Upload</button>
-                    <button class="col" onclick="shareSettings()">🔗 Share</button>
-                </div>
+                    <button class="col" onclick="shareMasterpiece()">🔗 Share Art</button>                </div>
                 <input type="file" id="file-input" accept="image/*" style="display:none">
 
                 <details open style="margin-top:15px; border:1px dashed var(--ai-purple); padding:10px; border-radius:8px;">
@@ -373,7 +446,11 @@
     const audioBtn = document.getElementById('btn-audio');
     const autoBtn = document.getElementById('btn-auto');
     
+
+     let isAppStarted = false;
     let particles = [];
+    let isRecording = false; // Kayıt yapıyor muyuz?
+    let recCanvas, recCtx;   // Kayıt için özel tuval
     let flowField = [];
     const flowRes = 15;
     let rows, cols;
@@ -382,13 +459,16 @@
     let currentTool = 'view';
     let isMouseDown = false;
     let isDrawingDirty = false; 
-    let particleDensity = 6; // DEFAULT: MEDIUM-FINE
+    let particleDensity = 6; // FINE RESOLUTION
     let particleShape = 'square'; 
     let animationId; 
     let time = 0;
     let isNeonMode = false;
+    let mediaRecorder;
+    let recordedChunks = [];
     
     let renderProps = { x: 0, y: 0, w: 0, h: 0 };
+    let activeFilterColor = null; // Aktif filtre rengini takip eder (Undo için)
 
     // FEATURES
     let isAutoPilot = false;
@@ -401,7 +481,7 @@
     const MAX_HISTORY = 20;
     let tempSnapshot = null;
 
-    let mouse = { x: 0, y: 0, radius: 50, lastX: 0, lastY: 0, vx: 0, vy: 0 };
+    let mouse = { x: 0, y: 0, radius: 20, lastX: 0, lastY: 0, vx: 0, vy: 0 }; // Small radius default
     let currentPalette = null; 
     let userApiKey = localStorage.getItem('gemini_api_key') || "";
 
@@ -409,19 +489,30 @@
         document.getElementById('api-key').value = userApiKey;
     }
 
+    
     function init() {
         const urlParams = new URLSearchParams(window.location.search);
+        
+        // 1. URL'den Density Ayarını Al (Yoksa varsayılan 6)
         const sharedDensity = urlParams.get('d');
-        if(sharedDensity) particleDensity = parseInt(sharedDensity);
+        if(sharedDensity) {
+            particleDensity = parseInt(sharedDensity);
+        } else {
+            particleDensity = 6; // Varsayılan Netlik
+        }
 
         sourceImage.crossOrigin = "Anonymous";
-        sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
+        // 2. HD Resmi Yükle (2560px)
+        sourceImage.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
         
         sourceImage.onload = () => {
             resizeCanvases();
-            processImage();
+            processImage(); // Resmi işle ve Zoom efektini başlat
+
+            // 3. ANİMASYONU BAŞLAT (Arka planın kımıldaması için şart)
             if (!animationId) animate();
 
+            // Paylaşılan filtre varsa uygula
             const sharedFilter = urlParams.get('f');
             if(sharedFilter) {
                 setTimeout(() => {
@@ -433,9 +524,31 @@
         
         sourceImage.onerror = () => {
             loadingEl.style.display = 'block';
-            loadingEl.innerText = "Error loading default image.";
+            loadingEl.innerText = "Error loading image. Refresh page.";
+        }
+        
+        // --- ARAYÜZ AYARLARI (Resim yüklenmesini beklemeden yap) ---
+
+        // 1. Brush Boyutu (20px)
+        document.getElementById('radius-slider').value = 20;
+        mouse.radius = 20;
+        
+        // 2. Cursor Guide (Çember) Başlangıç Boyutu
+        if(cursorGuide) {
+            cursorGuide.style.width = '40px'; // 20 * 2
+            cursorGuide.style.height = '40px';
+        }
+
+        // 3. Density Slider ve Yazısı
+        const dSlider = document.getElementById('density-slider');
+        if(dSlider) {
+            dSlider.value = particleDensity; // URL'den gelen veya varsayılan (6)
+            if(typeof updateDensityText === "function") {
+                updateDensityText(particleDensity);
+            }
         }
     }
+
 
     function resizeCanvases() {
         const w = window.innerWidth;
@@ -446,6 +559,17 @@
     }
 
     function startApp() {
+        isAppStarted = true;
+        
+        const container = document.getElementById('canvas-container');
+        
+        // 1. O yavaş 30 saniyelik hareketi iptal et, 1.5 saniyelik şık bir geçiş ayarla
+        container.style.transition = 'transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        
+        // 2. Resmi orijinal boyutuna (Scale 1) geri çek
+        container.style.transform = 'scale(1)';
+
+        // 3. Arayüzü gizle
         introLayer.style.opacity = '0';
         introLayer.style.visibility = 'hidden';
         sidebar.style.opacity = '1';
@@ -471,25 +595,63 @@
 
     function toggleGlow() {
         isNeonMode = document.getElementById('glow-switch').checked;
+        
+        // CSS AYARI:
+        // Önceki 'brightness' ve 'contrast' kodlarını sildik.
+        // Sadece hafif bir 'saturate' (canlılık) ekliyoruz. Beyazlatma yapmaz.
+        if(isNeonMode) {
+            canvasFg.style.filter = "saturate(1.3)"; // Renkleri %30 canlandır
+            canvasMid.style.filter = "brightness(0.5) blur(3px)"; // Arkası kararırsa neon belli olur
+        } else {
+            canvasFg.style.filter = "none";
+            canvasMid.style.filter = "blur(2px) brightness(0.9)";
+        }
     }
     
     function randomize() {
-        saveState(); 
-        const filters = ['fire', 'ocean', 'neon', 'gold', 'forest', 'noir'];
-        const randFilter = filters[Math.floor(Math.random() * filters.length)];
-        
-        document.getElementById('filter-input').value = randFilter;
-        quickFilter(randFilter);
-        
+        saveState(); // Beğenmezse geri alabilsin diye kaydet
+        showNotification("🎲 Mixing Magic...");
+
+        // 1. RASTGELE ŞEKİL (Shape)
         const shapes = ['square', 'circle', 'line'];
         const randShape = shapes[Math.floor(Math.random() * shapes.length)];
-        const shapeBtn = document.querySelectorAll('.shape-btn')[shapes.indexOf(randShape)];
-        setShape(randShape, shapeBtn);
+        // İlgili butonu bulup simüle ediyoruz (Böylece UI da güncellenir)
+        const shapeButtons = document.querySelectorAll('.shape-btn');
+        // Butonları tara ve doğru olana tıkla
+        if(randShape === 'square') shapeButtons[0].click();
+        if(randShape === 'circle') shapeButtons[1].click();
+        if(randShape === 'line') shapeButtons[2].click();
 
-        const randSpeed = Math.floor(Math.random() * 6) + 2; 
+        // 2. RASTGELE NEON (%30 Şansla açılsın, %70 kapalı)
+        const shouldGlow = Math.random() > 0.7;
+        const glowSwitch = document.getElementById('glow-switch');
+        // Eğer mevcut durum istediğimiz gibi değilse butona tıkla
+        if (glowSwitch.checked !== shouldGlow) {
+            glowSwitch.click(); 
+        }
+
+        // 3. RASTGELE HIZ VE BOYUT
+        const randSpeed = Math.floor(Math.random() * 6) + 2; // 2 ile 8 arası hız
         document.getElementById('speed-slider').value = randSpeed;
         document.getElementById('val-speed').innerText = randSpeed;
+
+        const randRadius = Math.floor(Math.random() * 30) + 15; // 15px ile 45px arası boyut
+        document.getElementById('radius-slider').value = randRadius;
+        document.getElementById('val-radius').innerText = randRadius + "px";
+        mouse.radius = randRadius;
+
+        // 4. RASTGELE RENK (En Havalı Kısım)
+        // 16 Milyon renk arasından rastgele bir tane seçer
+        const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        
+        // Renk seçiciye bu değeri ata
+        const colorPicker = document.getElementById('custom-color-picker');
+        colorPicker.value = randomHex;
+        
+        // Yeni renk sistemini çalıştır (Arka plan boyama dahil)
+        applyCustomColor();
     }
+
 
     async function toggleAudio() {
         if(isAudioActive) {
@@ -514,14 +676,63 @@
         }
     }
 
-    function shareSettings() {
-        const url = new URL(window.location.href);
-        url.searchParams.set('d', particleDensity);
-        const filterVal = document.getElementById('filter-input').value;
-        if(filterVal) url.searchParams.set('f', filterVal);
-        navigator.clipboard.writeText(url.toString()).then(() => { showNotification("Link Copied!"); });
-    }
+    // --- GELİŞMİŞ PAYLAŞIM FONKSİYONU ---
+    // --- GELİŞMİŞ PAYLAŞIM FONKSİYONU (SADECE RESİM ALANI) ---
+    async function shareMasterpiece() {
+        showNotification("Preparing Image...");
 
+        // 1. Sadece resmin olduğu alan kadar (renderProps) bir tuval yarat
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = renderProps.w;
+        tempCanvas.height = renderProps.h;
+        const ctx = tempCanvas.getContext('2d');
+
+        // 2. Katmanları çiz ama KESEREK (Crop) çiz
+        // drawImage parametreleri: (kaynak, kaynakX, kaynakY, kaynakW, kaynakH, hedefX, hedefY, hedefW, hedefH)
+        
+        // a) Orta katmanı al (Renk filtresi varsa boyalı gelir)
+        ctx.drawImage(
+            canvasMid, 
+            renderProps.x, renderProps.y, renderProps.w, renderProps.h, // Kaynaktan al
+            0, 0, renderProps.w, renderProps.h // Hedefe (0,0) yapıştır
+        );
+
+        // b) Parçacıkları al (En önemli kısım)
+        ctx.drawImage(
+            canvasFg, 
+            renderProps.x, renderProps.y, renderProps.w, renderProps.h, 
+            0, 0, renderProps.w, renderProps.h
+        );
+
+        // 3. Resmi Paylaş
+        tempCanvas.toBlob(async (blob) => {
+            const file = new File([blob], "my-van-gogh-art.png", { type: "image/png" });
+            const url = new URL(window.location.href);
+            url.searchParams.set('d', particleDensity);
+            if(activeFilterColor) url.searchParams.set('f', activeFilterColor);
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'My Van Gogh Art',
+                        text: 'Created with Van Gogh Studio',
+                        files: [file],
+                        url: url.toString()
+                    });
+                    showNotification("Shared Successfully!");
+                } catch (err) {
+                    console.log("Share cancelled", err);
+                }
+            } else {
+                // PC için indirme başlat
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = "my-van-gogh-art.png";
+                a.click();
+                showNotification("Image Downloaded!");
+            }
+        }, 'image/png');
+    }
     // --- AI FEATURES ---
     async function analyzeArt() {
         const inputKey = document.getElementById('api-key').value.trim();
@@ -597,7 +808,7 @@
     function processImage() {
         if (!sourceImage.width) return;
 
-        // 1. Smart Fit: Contain (Whole image visible) but scale to fill mostly
+        // 1. Smart Fit: Resmi canvas'ın içine sığdır (Contain mantığı)
         const scaleContain = Math.min(canvasFg.width / sourceImage.width, canvasFg.height / sourceImage.height);
         renderProps = {
             w: sourceImage.width * scaleContain,
@@ -606,7 +817,7 @@
             y: (canvasFg.height - (sourceImage.height * scaleContain)) / 2
         };
         
-        // 2. Cover Props for Background (Fill screen)
+        // 2. Cover Props: Arka plan için resmi ekrana yayma mantığı
         const scaleCover = Math.max(canvasFg.width / sourceImage.width, canvasFg.height / sourceImage.height);
         let coverProps = {
             w: sourceImage.width * scaleCover,
@@ -615,23 +826,66 @@
             y: (canvasFg.height - (sourceImage.height * scaleCover)) / 2
         }
 
-        // DRAW LAYERS
-        ctxDeep.clearRect(0, 0, canvasDeep.width, canvasDeep.height);
-        ctxDeep.drawImage(sourceImage, coverProps.x, coverProps.y, coverProps.w, coverProps.h);
-        
-        ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
-        ctxMid.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+        // 3. Arka Plan Katmanlarını Çiz (Renk Filtresi Kontrolü ile)
+        // Eğer aktif bir renk filtresi (activeFilterColor) varsa boyalı çiz, yoksa orijinal çiz.
+        if (typeof activeFilterColor !== 'undefined' && activeFilterColor) {
+            // Renkliyse (Undo veya Apply sonrası resize yapılırsa renk gitmesin diye)
+            refreshBackgrounds(true, activeFilterColor);
+        } else {
+            // Orijinalse
+            ctxDeep.clearRect(0, 0, canvasDeep.width, canvasDeep.height);
+            ctxDeep.drawImage(sourceImage, coverProps.x, coverProps.y, coverProps.w, coverProps.h);
+            
+            ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
+            ctxMid.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+        }
 
+        // 4. Ön Planı (Parçacıkların alınacağı yer) Çiz
         ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height);
         ctxFg.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
         const pixels = ctxFg.getImageData(0, 0, canvasFg.width, canvasFg.height);
-        ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height); 
         
+        // Pikselleri aldıktan sonra temizle (Parçacıklar çizilecek)
+        ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height); 
+
+        // 5. GİRİŞ EKRANI ANİMASYONU (Slow Zoom)
+        const container = document.getElementById('canvas-container');
+        
+        if (!isAppStarted) {
+            const startScale = Math.max(window.innerWidth / renderProps.w, window.innerHeight / renderProps.h);
+            
+            // 1. Önce Zoom'u ayarla (Hala görünmez)
+            container.style.transition = 'none';
+            container.style.transform = `scale(${startScale * 1.05})`; 
+            
+            // 2. Zoom ayarlandı, şimdi YAVAŞÇA GÖRÜNÜR YAP (Fade In)
+            // requestAnimationFrame, tarayıcının çizimi bitirmesini bekler
+            requestAnimationFrame(() => {
+                container.style.opacity = '1'; // Perde açılıyor
+                
+                // Yavaş hareket animasyonunu başlat
+                setTimeout(() => {
+                    if(!isAppStarted) {
+                        container.style.transition = 'transform 30s linear';
+                        container.style.transform = `scale(${startScale * 1.20})`;
+                    }
+                }, 100);
+            });
+            
+        } else {
+            // Uygulama içindeysek
+            container.style.transition = 'none';
+            container.style.transform = `scale(1)`;
+            container.style.opacity = '1'; // Her zaman görünür olsun
+        }
+        
+        // 6. Sistemi Başlat
         initFlowField();
         initParticles(pixels);
         historyStack = []; 
         saveState(); 
     }
+
 
     function initFlowField() {
         flowField = [];
@@ -645,8 +899,7 @@
         const gap = particleDensity;
         for (let y = 0; y < canvasFg.height; y += gap) {
             for (let x = 0; x < canvasFg.width; x += gap) {
-                // Keep it dense for oil paint look
-                if(gap < 3 && Math.random() > 0.95) continue;
+                if(gap < 3 && Math.random() > 0.95) continue; 
                 
                 const index = (y * pixels.width + x) * 4;
                 const alpha = pixels.data[index + 3];
@@ -675,8 +928,8 @@
             this.originalColor = color;
             this.brightness = brightness;
             
-            // SIZE FIX: Small and Elegant (Gap filled by underpainting)
-            this.baseSize = Math.max(particleDensity * 1.2, brightness * particleDensity * 1.8);
+            // SIZE FIX: Balanced for solid look without clunkiness
+            this.baseSize = Math.max(particleDensity * 1.4, brightness * particleDensity * 1.9);
             
             this.vx = 0; 
             this.vy = 0;
@@ -697,78 +950,98 @@
                 hasFlow = true;
             }
 
-            // View Mode: Very Gentle Ripple (Transient)
+            // --- VIEW MODU ---
             if(currentTool === 'view' && mouse.x !== 0) {
+                const interactionRadius = mouse.radius * 1.8;
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < mouse.radius) {
-                    const force = (mouse.radius - dist) / mouse.radius;
-                    const angle = Math.atan2(dy, dx);
-                    // Very gentle push (0.3)
-                    const push = 0.3; 
-                    this.vx -= Math.cos(angle) * force * push;
-                    this.vy -= Math.sin(angle) * force * push;
+                if (Math.abs(dx) < interactionRadius && Math.abs(dy) < interactionRadius) {
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < interactionRadius) {
+                        const force = (interactionRadius - dist) / interactionRadius;
+                        const angle = Math.atan2(dy, dx);
+                        const pushStrength = 5.0; 
+                        this.vx -= Math.cos(angle) * force * pushStrength;
+                        this.vy -= Math.sin(angle) * force * pushStrength;
+                    }
                 }
             }
 
-            // Auto Pilot
+            // --- AUTO PILOT: VAN GOGH GİRDAP DANSI (GÜÇLENDİRİLMİŞ) ---
             if(isAutoPilot) {
-                const t = time * 0.001;
-                const noiseX = Math.sin(this.y * 0.005 + t) * 0.03;
-                const noiseY = Math.cos(this.x * 0.005 + t) * 0.03;
-                this.vx += noiseX; this.vy += noiseY;
+                // Zamanı hızlandır
+                const t = time * 0.005; 
+                
+                // Daha geniş ve belirgin dalgalar
+                // Math.sin ve cos kombinasyonu girdap hissi yaratır
+                const waveX = Math.sin(this.y * 0.01 + t);
+                const waveY = Math.cos(this.x * 0.01 + t);
+                
+                // Slider'daki hızı güce dönüştür (speedFactor)
+                // 0.08 yerine 0.5 kullandık. Çok daha güçlü itiyor.
+                const power = speedFactor * 0.15; 
+                
+                this.vx += waveX * power;
+                this.vy += waveY * power;
             }
 
-            // AUDIO SENSOR (Strict)
-            if(isAudioActive) {
-                if (audioLevel < 10) { 
-                    // Freeze
-                    this.vx *= 0.1; this.vy *= 0.1;
-                    this.x += (this.originX - this.x) * 0.1;
-                    this.y += (this.originY - this.y) * 0.1;
-                } else {
-                    // Pulse
-                    let energy = audioLevel / 50; 
-                    if(hasFlow) {
-                         this.vx *= (1 + energy);
-                         this.vy *= (1 + energy);
-                     } else {
-                         this.x += (Math.random() - 0.5) * energy;
-                         this.y += (Math.random() - 0.5) * energy;
-                     }
+            // --- SES EFEKTLERİ ---
+            if(isAudioActive && audioLevel > 20) {
+                if(audioBass > 130) {
+                    const intensity = (audioBass - 130) / 125;
+                    this.vx += (Math.random() - 0.5) * intensity * 1.5;
+                    this.vy += (Math.random() - 0.5) * intensity * 1.5;
+                    
+                    const dx = this.x - canvasFg.width/2;
+                    const dy = this.y - canvasFg.height/2;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist > 0) {
+                         this.vx += (dx/dist) * intensity * 2.0;
+                         this.vy += (dy/dist) * intensity * 2.0;
+                    }
+                }
+                if(audioTreble > 80) {
+                    const intensity = (audioTreble - 80) / 175;
+                    const wave = Math.sin(this.y * 0.03 + time * 0.2);
+                    this.vx += wave * intensity * 2.5;
                 }
             }
 
-            // If no interaction, return home fast (Transient effect)
-            if (!hasFlow && !isAutoPilot && !isAudioActive && !(currentTool === 'view' && mouse.x !== 0)) {
+            // --- FİZİK VE EVE DÖNÜŞ (AYARLANDI) ---
+            if (!hasFlow) { 
                 const dx = this.originX - this.x;
                 const dy = this.originY - this.y;
-                this.vx += dx * 0.05;
-                this.vy += dy * 0.05;
-                // High friction for fast return
-                this.vx *= 0.6; 
-                this.vy *= 0.6;
+                
+                // İŞTE SIR BURADA:
+                // Auto modundaysak, parçacıkları eve çağırma gücünü (returnForce)
+                // 0.05'ten 0.002'ye düşürdük. Neredeyse hiç çağırmıyoruz.
+                // Bu sayede parçacıklar özgürce dolaşıp dans edebiliyor.
+                let returnForce = 0.05; // Normal mod (Sıkı)
+                
+                if (isAutoPilot) {
+                    returnForce = 0.002; // Dans modu (Çok Gevşek)
+                }
+                
+                this.vx += dx * returnForce; 
+                this.vy += dy * returnForce;
+                
+                // Sürtünme
+                this.vx *= 0.90; 
+                this.vy *= 0.90;
             } else {
                 const maxSpeed = speedFactor * this.speedMod;
                 this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
                 this.vy = Math.max(Math.min(this.vy, maxSpeed), -maxSpeed);
             }
 
-            // Stop micro-jitter
-            if (Math.abs(this.vx) < 0.01) this.vx = 0;
-            if (Math.abs(this.vy) < 0.01) this.vy = 0;
+            // Micro-movement Stop
+            if (Math.abs(this.vx) < 0.001) this.vx = 0;
+            if (Math.abs(this.vy) < 0.001) this.vy = 0;
 
             this.x += this.vx;
             this.y += this.vy;
 
-            // Boundaries
-            const distHome = Math.sqrt(Math.pow(this.x - this.originX, 2) + Math.pow(this.y - this.originY, 2));
-            if ((hasFlow || isAutoPilot || (isAudioActive && audioLevel > 10)) && distHome > 30) {
-                 this.x = this.originX;
-                 this.y = this.originY;
-            }
-            
+            // Sınır koruması
             if (this.x < 0 || this.x > canvasFg.width || this.y < 0 || this.y > canvasFg.height) {
                 this.x = this.originX; this.y = this.originY;
             }
@@ -780,65 +1053,151 @@
             }
         }
 
+
         draw() {
-            if(isNeonMode) {
-                ctxFg.shadowBlur = 5; 
-                ctxFg.shadowColor = this.color;
-                ctxFg.globalCompositeOperation = 'screen'; 
-            } else {
-                ctxFg.shadowBlur = 0;
-                ctxFg.globalCompositeOperation = 'source-over';
-            }
+            // 1. Karışım Modu
+            ctxFg.globalCompositeOperation = 'source-over';
             
             ctxFg.fillStyle = this.color;
             ctxFg.strokeStyle = this.color;
-            let size = this.baseSize;
 
+            // --- NEON PARLAMA (Hale) ---
+            if(isNeonMode) {
+                const glowSize = this.baseSize * 2.5; 
+                ctxFg.globalAlpha = 0.15; 
+                
+                if(particleShape === 'square') {
+                    ctxFg.fillRect(this.x - (glowSize-this.baseSize)/2, this.y - (glowSize-this.baseSize)/2, glowSize, glowSize);
+                } else if (particleShape === 'circle') {
+                    ctxFg.beginPath();
+                    ctxFg.lineCap = 'round';
+                    ctxFg.lineWidth = glowSize;
+                    ctxFg.moveTo(this.x, this.y);
+                    ctxFg.lineTo(this.x, this.y);
+                    ctxFg.stroke();
+                } else if (particleShape === 'line') {
+                    ctxFg.lineWidth = glowSize;
+                    ctxFg.beginPath();
+                    ctxFg.moveTo(this.x, this.y);
+                    const lineLen = this.baseSize * 2;
+                    ctxFg.lineTo(this.x + Math.cos(this.angle)*lineLen, this.y + Math.sin(this.angle)*lineLen);
+                    ctxFg.stroke();
+                }
+            }
+            // ---------------------------
+
+            ctxFg.globalAlpha = 1.0;
+
+            // --- BASS ETKİSİ İLE BOYUT HESAPLAMA ---
+            // İşte aradığın kod burası:
+            let size = this.baseSize;
+            
+            // Eğer müzik açıksa ve Bass vuruyorsa boyutu artır
+            if (isAudioActive && audioBass > 80) {
+                // Bass şiddetine göre ekstra büyüklük ekle (max +5px)
+                const extraSize = (audioBass / 255) * 5;
+                size += extraSize;
+            }
+            // ---------------------------------------
+
+            // ŞEKİL ÇİZİMİ (Optimize Edilmiş)
             if(particleShape === 'square') {
-                // Slight overlap
-                ctxFg.fillRect(this.x, this.y, size + 0.5, size + 0.5);
+                // Kare: x ve y'yi ortalayarak çiz ki büyüyünce kaymasın
+                ctxFg.fillRect(this.x - size/2, this.y - size/2, size, size);
+                
             } else if (particleShape === 'circle') {
                 ctxFg.beginPath();
-                ctxFg.arc(this.x, this.y, size/2, 0, Math.PI*2);
-                ctxFg.fill();
+                ctxFg.lineCap = 'round';
+                ctxFg.lineWidth = size;
+                ctxFg.moveTo(this.x, this.y);
+                ctxFg.lineTo(this.x, this.y);
+                ctxFg.stroke();
+                
             } else if (particleShape === 'line') {
-                ctxFg.lineWidth = size/2;
+                ctxFg.lineWidth = isNeonMode ? size : size/2;
                 ctxFg.beginPath();
                 ctxFg.moveTo(this.x, this.y);
                 const lineLen = size * 2;
                 ctxFg.lineTo(this.x + Math.cos(this.angle)*lineLen, this.y + Math.sin(this.angle)*lineLen);
                 ctxFg.stroke();
             }
-            
-            if(isNeonMode) {
-                ctxFg.shadowBlur = 0;
-                ctxFg.globalCompositeOperation = 'source-over';
-            }
         }
+    
     }
+
+
+
+    // Global ses değişkenleri (Her yerden erişilebilsin diye)
+    let audioBass = 0;
+    let audioTreble = 0;
 
     function animate() {
         animationId = requestAnimationFrame(animate);
         time++; 
         const speed = parseInt(document.getElementById('speed-slider').value);
         
+        // SES ANALİZİ (Gelişmiş)
         if(isAudioActive && analyser) {
             analyser.getByteFrequencyData(dataArray);
-            const avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
-            const scale = 1 + (avg / 500);
+            
+            // 1. Ortalama Ses Seviyesi
+            audioLevel = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
+            
+            // 2. Bass (Kalın Sesler) - Dizinin ilk %10'u
+            let bassSum = 0;
+            let bassLen = Math.floor(dataArray.length * 0.1);
+            for(let i=0; i<bassLen; i++) bassSum += dataArray[i];
+            audioBass = bassSum / bassLen;
+
+            // 3. Tiz/Mid (İnce Sesler) - Dizinin ortaları
+            let trebleSum = 0;
+            let trebleLen = Math.floor(dataArray.length * 0.5);
+            for(let i=bassLen; i<bassLen+trebleLen; i++) trebleSum += dataArray[i];
+            audioTreble = trebleSum / trebleLen;
+
+            // Buton animasyonu (Bass'a göre zıplasın)
+            const scale = 1 + (audioBass / 400);
             audioBtn.style.transform = `scale(${scale})`;
-            audioLevel = avg;
+            
         } else {
             audioLevel = 0;
+            audioBass = 0;
+            audioTreble = 0;
         }
 
+        // Çizim
         ctxFg.clearRect(0, 0, canvasFg.width, canvasFg.height);
-        
         if(particles.length > 0) {
             for(let i=0; i<particles.length; i++) {
                 particles[i].update(speed);
                 particles[i].draw();
             }
+        }
+
+
+        if (isRecording && recCtx) {
+            // 1. Temizle
+            recCtx.clearRect(0, 0, recCanvas.width, recCanvas.height);
+            
+            // 2. EN ALTA SABİT ARKA PLANI ÇİZ (Boşlukları kapatır)
+            // Deep (En Arka) katmanını bulanıklaştırarak çiziyoruz
+            recCtx.filter = 'blur(10px) brightness(0.6)';
+            // Burada renderProps yerine 'coverProps' mantığıyla tüm ekranı kaplamalıyız
+            // Basitçe sourceImage'i canvas boyutuna gererek çizelim, boşluk kalmasın
+            recCtx.drawImage(sourceImage, 0, 0, recCanvas.width, recCanvas.height);
+
+            // 3. ORTA PLANI ÇİZ (Netlik katar)
+            // Eğer renk filtresi varsa canvasMid zaten boyalıdır, onu kullanırız
+            recCtx.filter = 'blur(2px) brightness(0.9)';
+            // Orta katmanı tam yerine (renderProps) çiziyoruz
+            recCtx.drawImage(canvasMid, 
+                renderProps.x, renderProps.y, renderProps.w, renderProps.h, // Kaynak
+                renderProps.x, renderProps.y, renderProps.w, renderProps.h  // Hedef
+            );
+
+            // 4. PARÇACIKLARI ÇİZ (Hareketli Kısım)
+            recCtx.filter = 'none';
+            recCtx.drawImage(canvasFg, 0, 0);
         }
     }
 
@@ -868,6 +1227,7 @@
                         if (dist < mouse.radius) {
                             const idx = col + row * cols;
                             flowField[idx] = angle; 
+                            isDrawingDirty = true;
                         }
                     }
                 }
@@ -877,10 +1237,73 @@
         mouse.lastY = mouse.y;
     }
 
+    // --- VIDEO RECORDING ---
+    function recordVideo() {
+        if (isRecording) return;
+
+        const btn = document.getElementById('btn-video');
+        btn.classList.add('recording');
+        btn.innerText = "Recording (HQ)..."; // HQ uyarısı
+
+        // 1. Kayıt Tuvali
+        recCanvas = document.createElement('canvas');
+        recCanvas.width = canvasFg.width;
+        recCanvas.height = canvasFg.height;
+        recCtx = recCanvas.getContext('2d');
+
+        // 2. Stream ve Kayıtçı (YÜKSEK KALİTE)
+        const stream = recCanvas.captureStream(30); // 30 FPS
+        
+        const options = { 
+            mimeType: 'video/webm; codecs=vp9', 
+            videoBitsPerSecond: 8000000 // 8 Mbps
+        };
+        
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            console.log("VP9 not supported, using default.");
+            delete options.mimeType;
+        }
+
+        mediaRecorder = new MediaRecorder(stream, options);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = function(e) {
+            if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = function() {
+            isRecording = false;
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'van-gogh-studio-hd.webm';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+            
+            btn.classList.remove('recording');
+            btn.innerText = "🎥 Record (5s)";
+        };
+
+        isRecording = true;
+        mediaRecorder.start();
+        
+        setTimeout(() => {
+            if(mediaRecorder.state === 'recording') mediaRecorder.stop();
+        }, 5000);
+    }
+    
+    // --- UNDO SYSTEM ---
     function createSnapshot() {
         return {
             flow: [...flowField],
             palette: currentPalette ? [...currentPalette] : null
+            
         };
     }
 
@@ -895,12 +1318,15 @@
         updateUndoBtn();
     }
 
-    function undoAction() {
+     function undoAction() {
         if(historyStack.length > 0) {
             const state = historyStack.pop(); 
+            
+            // 1. Parçacıkları ve Akışı Geri Yükle
             flowField = [...state.flow];
             currentPalette = state.palette ? [...state.palette] : null;
-            
+            activeFilterColor = state.filterColor; // Rengi geri yükle
+
             particles.forEach(p => {
                 p.vx = 0; p.vy = 0;
                 p.x = p.originX; p.y = p.originY;
@@ -908,11 +1334,20 @@
                 else p.color = p.originalColor;
                 p.angle = 0; 
             });
+
+            // 2. ARKA PLANI GERİ YÜKLE (Sorunu Çözen Kısım)
+            if (activeFilterColor) {
+                // Eğer geri döndüğümüz noktada bir renk varsa, arka planı o renge boya
+                refreshBackgrounds(true, activeFilterColor);
+            } else {
+                // Eğer renk yoksa (orijinalse), orijinal resmi çiz
+                refreshBackgrounds(false);
+            }
             
             showNotification("Undo Successful");
             updateUndoBtn();
         } else {
-            resetFlow(false);
+            resetToOriginal(); // History bittiyse tamamen sıfırla
             showNotification("Nothing to Undo");
         }
     }
@@ -924,22 +1359,43 @@
 
     function resetFlow(clearHistory = true) {
         if(clearHistory) saveState(); 
+
+        // 1. Akış Vektörlerini Sil
         for(let i=0; i<flowField.length; i++) flowField[i] = null;
+        
+        // 2. Parçacıkları Evine ve Orijinal Rengine Döndür
         particles.forEach(p => { 
             p.vx = 0; p.vy = 0;
             p.x = p.originX; p.y = p.originY;
-            p.color = p.originalColor;
+            p.color = p.originalColor; // Rengi düzelt
             p.angle = 0;
         });
+
+        // 3. Değişkenleri Sıfırla
         currentPalette = null;
+        activeFilterColor = null; // Aktif rengi unut
         
+        // Modları Kapat
         isAutoPilot = false; document.getElementById('btn-auto').classList.remove('active');
         if(isAudioActive) { isAudioActive = false; audioBtn.classList.remove('active'); }
-        isNeonMode = false; document.getElementById('glow-switch').checked = false;
-        document.getElementById('filter-input').value = '';
+        
+        // Neon açıksa kapat
+        if(isNeonMode) {
+            document.getElementById('glow-switch').click();
+        }
+
+        // 4. ARKA PLANI TEMİZLE (Sorunu Çözen Kısım)
+        // Daha önce yazdığımız yardımcı fonksiyonu çağırıyoruz.
+        // 'false' diyerek boyama yapma, orijinali göster diyoruz.
+        refreshBackgrounds(false);
+
+        // Renk seçiciyi varsayılan maviye çek (Görsel düzeltme)
+        const picker = document.getElementById('custom-color-picker');
+        if(picker) picker.value = "#63b3ed";
 
         showNotification("Reset Complete");
     }
+
 
     function showNotification(msg) {
         notif.innerText = msg;
@@ -951,8 +1407,16 @@
         currentTool = tool;
         document.getElementById('btn-view').className = tool === 'view' ? 'col active' : 'col';
         document.getElementById('btn-paint').className = tool === 'paint' ? 'col btn-paint active' : 'col btn-paint';
-        cursorGuide.style.display = tool === 'paint' ? 'block' : 'none';
-        document.body.style.cursor = tool === 'paint' ? 'none' : 'default';
+        
+        if (tool === 'paint') {
+            // Brush'a geçer geçmez çemberi mouse'un olduğu yere ışınla
+            cursorGuide.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0) translate(-50%, -50%)`;
+            cursorGuide.style.display = 'block';
+            document.body.style.cursor = 'none';
+        } else {
+            cursorGuide.style.display = 'none';
+            document.body.style.cursor = 'default';
+        }
     }
 
     window.setShape = function(shape, btn) {
@@ -962,7 +1426,12 @@
     }
 
     window.reloadDensity = function() {
-        particleDensity = parseInt(document.getElementById('density-slider').value);
+        const val = document.getElementById('density-slider').value;
+        
+        // ŞU SATIRI EKLE (Yazıyı güncelle)
+        updateDensityText(val);
+
+        particleDensity = parseInt(val);
         loadingEl.style.display = 'block';
         loadingEl.innerText = "RE-PIXELATING...";
         setTimeout(() => {
@@ -1028,25 +1497,53 @@
     });
 
     window.addEventListener('mousemove', e => {
-        mouse.lastX = mouse.x; mouse.lastY = mouse.y;
-        mouse.x = e.clientX; mouse.y = e.clientY;
+        // 1. Önce eski konumları kaydet (Hız hesaplamak için)
+        mouse.lastX = mouse.x; 
+        mouse.lastY = mouse.y;
+        
+        // 2. DÜZELTME: Canvas'ın ekrandaki GERÇEK (Zoom'lu) konumunu al
+        // getBoundingClientRect() bize elementin o anki boyutunu ve yerini verir.
+        const rect = canvasFg.getBoundingClientRect();
+
+        // 3. Ölçekleme oranını bul (Orijinal Boyut / Görünür Boyut)
+        // Eğer Zoom yaptıysak bu oran değişmiştir.
+        const scaleX = canvasFg.width / rect.width;
+        const scaleY = canvasFg.height / rect.height;
+
+        // 4. Mouse koordinatlarını bu ölçeğe göre ayarla
+        // (Ekran Koordinatı - Canvas Kenarı) * Ölçek
+        mouse.x = (e.clientX - rect.left) * scaleX;
+        mouse.y = (e.clientY - rect.top) * scaleY;
+
+        // 5. Mouse Hızını (Momentum) Hesapla
+        mouse.vx = Math.max(Math.min((mouse.x - mouse.lastX), 20), -20);
+        mouse.vy = Math.max(Math.min((mouse.y - mouse.lastY), 20), -20);
+
+        // Brush Modu İmleç Takibi
         if(currentTool === 'paint') {
-            cursorGuide.style.left = e.clientX + 'px';
-            cursorGuide.style.top = e.clientY + 'px';
+            // İmleci de aynı düzeltilmiş koordinatlara taşı
+            // (Not: transform translate kullandığımız için e.clientX yerine mouse.x kullanabiliriz 
+            // ama imleç 'fixed' olduğu için e.clientX daha doğrudur görsel olarak, 
+            // fakat brush tam canvas üstünde olsun istiyorsak aşağıdaki gibi kalmalı)
+            
+            // İmleç görsel bir div olduğu için ekran koordinatlarını kullanması daha sağlıklı:
+            cursorGuide.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+            
             if(isMouseDown) paintFlow();
         }
-        // Always track for view mode effect
-        mouse.lastX = mouse.x;
-        mouse.lastY = mouse.y;
     });
 
     window.addEventListener('mousedown', () => {
         isMouseDown = true;
         if(currentTool === 'paint') {
-            tempSnapshot = createSnapshot(); // SAVE BEFORE START
+            tempSnapshot = createSnapshot(); 
             isDrawingDirty = false; 
             cursorGuide.style.borderColor = '#ff0055';
-            cursorGuide.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            
+            // HATA BURADAYDI: Sadece scale yapınca konum siliniyordu.
+            // DÜZELTME: Konumu (translate3d) koruyarak scale ekliyoruz.
+            cursorGuide.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0) translate(-50%, -50%) scale(0.9)`;
+            
             mouse.lastX = mouse.x;
             mouse.lastY = mouse.y;
         }
@@ -1056,11 +1553,14 @@
         isMouseDown = false;
         if(currentTool === 'paint') {
             if(isDrawingDirty && tempSnapshot) {
-                saveState(); // SAVE AFTER FINISH
+                saveState(); 
                 tempSnapshot = null;
             }
             cursorGuide.style.borderColor = 'rgba(255,255,255,0.8)';
-            cursorGuide.style.transform = 'translate(-50%, -50%) scale(1)';
+            
+            // HATA BURADAYDI: Konum siliniyordu.
+            // DÜZELTME: Konumu koruyarak scale'i normale (1) döndürüyoruz.
+            cursorGuide.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0) translate(-50%, -50%) scale(1)`;
         }
     });
 
@@ -1079,27 +1579,209 @@
         if(this.files && this.files[0]) {
             saveState();
             const reader = new FileReader();
-            reader.onload = (ev) => { sourceImage.src = ev.target.result; }
+             reader.onload = (ev) => { 
+                const newSrc = ev.target.result;
+                
+                // 1. Ana resmi güncelle (Canvas için)
+                sourceImage.src = newSrc; 
+                
+                // 2. YENİ: Arka plan duvar kağıdını da güncelle!
+                // Böylece yüklediğin resim arka planda da belirir.
+                document.body.style.backgroundImage = `url(${newSrc})`;
+                
+                // (İsteğe bağlı) Yüklendi bildirimi
+                showNotification("New Art Uploaded");
+            }
             reader.readAsDataURL(this.files[0]);
         }
     });
 
     window.saveSnapshot = function() {
-        const combinedCanvas = document.createElement('canvas');
-        combinedCanvas.width = canvasFg.width;
-        combinedCanvas.height = canvasFg.height;
-        const combinedCtx = combinedCanvas.getContext('2d');
-        combinedCtx.drawImage(canvasDeep, 0, 0);
-        combinedCtx.drawImage(canvasMid, 0, 0);
-        combinedCtx.drawImage(canvasFg, 0, 0);
+        showNotification("Capturing Art...");
 
+        // 1. Sadece resmin boyutu kadar bir tuval oluştur (Kırpma)
+        const combinedCanvas = document.createElement('canvas');
+        combinedCanvas.width = renderProps.w;
+        combinedCanvas.height = renderProps.h;
+        const combinedCtx = combinedCanvas.getContext('2d');
+
+        // 2. Orta Katmanı (Mid) Çiz
+        // drawImage(kaynak, kaynakX, kaynakY, kaynakW, kaynakH, hedefX, hedefY, hedefW, hedefH)
+        combinedCtx.drawImage(
+            canvasMid, 
+            renderProps.x, renderProps.y, renderProps.w, renderProps.h, // Ekranda nerede duruyorsa oradan al
+            0, 0, renderProps.w, renderProps.h // Yeni tuvalin 0,0 noktasına yapıştır
+        );
+
+        // 3. Parçacıkları (Fg) Çiz
+        combinedCtx.drawImage(
+            canvasFg, 
+            renderProps.x, renderProps.y, renderProps.w, renderProps.h, 
+            0, 0, renderProps.w, renderProps.h
+        );
+
+        // 4. İndirme İşlemi
         const link = document.createElement('a');
         link.download = 'van-gogh-studio-art.png';
-        link.href = combinedCanvas.toDataURL();
+        link.href = combinedCanvas.toDataURL('image/png', 1.0); // En yüksek kalite
         link.click();
+        
+        showNotification("Snapshot Saved!");
     }
 
     init();
+
+
+    // --- RENK STÜDYOSU FONKSİYONLARI ---
+
+    function applyCustomColor() {
+        const hex = document.getElementById('custom-color-picker').value;
+        saveState(); 
+        
+        activeFilterColor = hex; // Aktif rengi kaydet
+        showNotification("Applying Color Theme...");
+
+        const hsl = hexToHSL(hex);
+        const newPalette = [
+            `hsl(${hsl.h}, ${hsl.s}%, 10%)`,
+            `hsl(${hsl.h}, ${hsl.s}%, 25%)`,
+            `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
+            `hsl(${hsl.h}, ${hsl.s}%, 75%)`,
+            `hsl(${hsl.h}, ${hsl.s}%, 95%)`
+        ];
+
+        currentPalette = newPalette;
+        particles.forEach(p => applyColorToParticle(p, newPalette));
+        
+        // Arka planı boya
+        refreshBackgrounds(true, hex);
+    }
+
+
+    // YARDIMCI: Bir katmanı renge boyayan fonksiyon
+    function tintLayer(ctx, canvas, color, props) {
+        // 1. Önce orijinal resmi temiz bir şekilde çiz
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.drawImage(sourceImage, props.x, props.y, props.w, props.h);
+        
+        // 2. 'color' modu ile seçilen rengi resmin üzerine kaynaştır
+        // Bu, resmin dokusunu korur ama rengini değiştirir.
+        ctx.save();
+        ctx.globalCompositeOperation = 'color';
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 3. Parlaklığı dengelemek için hafif bir 'multiply' (koyulaştırma) katmanı
+        // Bu, renklerin fazla patlamasını engeller, daha sinematik durur.
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.restore();
+    }
+    function hexToHSL(H) {
+        let r = 0, g = 0, b = 0;
+        if (H.length == 4) {
+            r = "0x" + H[1] + H[1]; g = "0x" + H[2] + H[2]; b = "0x" + H[3] + H[3];
+        } else if (H.length == 7) {
+            r = "0x" + H[1] + H[2]; g = "0x" + H[3] + H[4]; b = "0x" + H[5] + H[6];
+        }
+        r /= 255; g /= 255; b /= 255;
+        let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
+        let h = 0, s = 0, l = 0;
+
+        if (delta == 0) h = 0;
+        else if (cmax == r) h = ((g - b) / delta) % 6;
+        else if (cmax == g) h = (b - r) / delta + 2;
+        else h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+        if (h < 0) h += 360;
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+        return {h, s, l};
+    }
+    
+    function resetToOriginal() {
+        saveState();
+        showNotification("Original Colors Restored");
+
+        // 1. Renkleri ve filtreleri sıfırla
+        activeFilterColor = null; 
+        currentPalette = null;
+        particles.forEach(p => p.color = p.originalColor);
+        
+        // 2. Arka planı (Canvas katmanlarını) temizle
+        refreshBackgrounds(false);
+        
+        // 3. Renk seçiciyi maviye çek
+        document.getElementById('custom-color-picker').value = "#63b3ed";
+        
+        // --- YENİ EKLENEN KISIM ---
+        // 4. Resmi Orijinal Van Gogh'a Döndür (Eğer kendi resmini yüklediyse sıfırlansın)
+        const defaultUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
+        
+        sourceImage.src = defaultUrl; // Canvas kaynağını değiştir
+        document.body.style.backgroundImage = `url(${defaultUrl})`; // Arka plan duvar kağıdını değiştir
+    
+         canvasDeep.style.filter = "blur(10px) brightness(0.6)"; 
+        
+    }
+
+    function refreshBackgrounds(isTinted, color = null) {
+        if(isTinted && color) {
+            // Boyalı halini çiz
+            tintLayer(ctxMid, canvasMid, color, renderProps);
+            tintLayer(ctxDeep, canvasDeep, color, {x:0, y:0, w:canvasDeep.width, h:canvasDeep.height});
+            canvasMid.style.filter = "none";
+            canvasDeep.style.filter = "blur(40px)";
+        } else {
+            // Orijinal halini çiz
+            ctxMid.globalCompositeOperation = 'source-over';
+            ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
+            ctxMid.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
+            
+            ctxDeep.globalCompositeOperation = 'source-over';
+            ctxDeep.clearRect(0, 0, canvasDeep.width, canvasDeep.height);
+            let scale = Math.max(canvasDeep.width / sourceImage.width, canvasDeep.height / sourceImage.height);
+            let w = sourceImage.width * scale;
+            let h = sourceImage.height * scale;
+            let x = (canvasDeep.width - w) / 2;
+            let y = (canvasDeep.height - h) / 2;
+            ctxDeep.drawImage(sourceImage, x, y, w, h);
+
+             canvasMid.style.filter = "none"; // Ortayı net bırak
+            canvasDeep.style.filter = "blur(10px) brightness(0.6)"; // Arkadakini hafif bulanık yap
+     
+        }
+    }
+
+    // Slider sürüklenirken çalışır (Anlık yazı değişimi)
+    function updateDensityText(val) {
+        const label = document.getElementById('val-density');
+        const v = parseInt(val);
+
+        // Sayı KÜÇÜKSE = Detay YÜKSEK (Ters Mantık)
+        if (v <= 4) {
+            label.innerText = "Ultra High";
+            label.style.color = "#ff5555"; // Kırmızı (Uyarı gibi, çünkü işlemciyi yorar)
+        } else if (v <= 6) {
+            label.innerText = "High Detail";
+            label.style.color = "#fcd34d"; // Sarı (Varsayılan)
+        } else if (v <= 9) {
+            label.innerText = "Medium";
+            label.style.color = "#fff";    // Beyaz
+        } else if (v <= 12) {
+            label.innerText = "Low";
+            label.style.color = "#ccc";
+        } else {
+            label.innerText = "Performance"; // En düşük kalite, en yüksek hız
+            label.style.color = "#64748b";
+        }
+    }
 </script>
 </body>
 </html>
