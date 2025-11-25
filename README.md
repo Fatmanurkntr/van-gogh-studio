@@ -1,92 +1,92 @@
-# 🎨 Van Gogh Studio 
+# 🎨 Van Gogh Studio | Interactive Digital Art
 
-**Van Gogh Studio** is an interactive and generative art application inspired by Vincent van Gogh’s impasto technique, transforming static images into living particle simulations.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Technology](https://img.shields.io/badge/HTML5_Canvas-JavaScript-yellow)
+![AI](https://img.shields.io/badge/Powered_by-Gemini_AI-purple)
 
-The project blends classic computer graphics algorithms (Flow Fields) with modern Generative AI (Google Gemini) to deliver a unique digital art experience.
+**Van Gogh Studio** is an immersive, browser-based interactive art application. It deconstructs static masterpieces into thousands of living particles, allowing users to interact with the artwork using physics simulations, audio reactivity, and generative AI tools.
 
-🔗 **Live Demo:**  
-https://Fatmanurkntr.github.io/van-gogh-studio/
-
----
-
-## ✨ Key Features (What You Can Do)
-
-### 1. 🖌️ Interactive Painting & Animation
-- **Living Canvas:** The artwork isn’t static; it flows based on the underlying image data.  
-- **Magic Brush:** Bring your canvas to life using mouse or touch gestures.  
-- **Freeze & Flow:** Pause the simulation or let it move freely.
-
-### 2. 🎵 Audio Reactive Art
-- **Dance with Music:** Enable the microphone—your artwork will move in sync with the rhythm.  
-- **Bass & Dynamics:** Strong bass speeds up particles; silence makes them settle.
-
-### 3. 🧠 Hybrid AI Capabilities
-- **Smart Filters (No API Required):**  
-  Instantly change color palettes with simple words like “Fire”, “Ocean”, “Forest”, or “Matrix”.  
-- **Gemini Art Critic:**  
-  Get poetic AI-generated critiques of your artwork.  
-- **Generative Art (Pro):**  
-  Turn text prompts into new SVG visuals (example: *“A cyberpunk city in Van Gogh style”*).
-
-### 4. ⏪ Time Travel (Robust Undo System)
-- **Step-by-Step Undo:**  
-  Reverse brush movements and filter changes smoothly.  
-- **Snapshot Memory:**  
-  Because every particle state is stored, rewinding looks natural and seamless.
-
-### 5. 🛠️ Customization Studio
-- Adjust particle density, flow speed (viscosity), and brush radius in real time.  
-- **Shape Shifting:** Switch between Square, Circle, or Line particle types.  
-- **Export:** Save high-resolution PNG images or record 5-second videos.
+This project combines advanced **HTML5 Canvas** manipulation, **Flow Field** algorithms, and the **Google Gemini API** to create a unique blend of classic art and modern technology.
 
 ---
 
-## 🔧 How It Works (The Engineering)
+## ✨ Key Features
 
-This project is built entirely with **Vanilla JavaScript** and the **HTML5 Canvas API**, with zero dependencies in the core engine.
+### 🖌️ Interactive Particle System
+* **Fluid Simulation:** The artwork comes alive with a custom physics engine. Particles react to mouse movements, creating fluid-like ripples and swirls.
+* **Deep Zoom:** A multi-layer canvas system (`Deep`, `Mid`, `Foreground`) provides a parallax effect and depth.
+* **Dynamic Density:** Users can adjust particle density in real-time, ranging from "Ultra High" detail to performance-optimized modes.
 
-### 1. Flow Field Algorithm
-- **Luminance Calculation:**  
-  Each pixel’s brightness is computed as:  
-  `0.299R + 0.587G + 0.114B`
-- **Vector Mapping:**  
-  Brightness values map to directional flow vectors.  
-- **Particle Physics:**  
-  Thousands of particles follow these invisible vectors, creating a “wind-like brushstroke” effect.
+### 🤖 AI Integration (Gemini)
+* **Art Critic Analysis:** Uses Gemini Vision to analyze the current canvas state and provide a poetic, artistic critique.
+* **Generative AI Painting:** Describe a scene, and the AI generates a raw SVG representation which is then particle-ized instantly.
+* **Prompt Magic:** Enhances simple user prompts into detailed artistic descriptions.
 
-### 2. "Tethered Flow" Physics
-- **Liquid Motion:** Particles drift smoothly in the direction of brush movement.  
-- **Form Retention:**  
-  They never escape the artwork; they return to their origin points.  
-- **Underpainting:**  
-  Background layers prevent empty black areas.
+### 🎵 Audio Reactivity
+* **Visualizer:** Activates the microphone to make the particles dance to music.
+* **Frequency Analysis:** Bass frequencies trigger particle size expansion, while treble frequencies affect movement intensity.
 
-### 3. Hybrid AI Integration
-- **Local Logic (Free):**  
-  A hashing-based system creates color palettes from simple text.  
-- **Remote API (Google Gemini):**  
-  - Image generation  
-  - Art analysis  
-  - SVG rendering  
+### 🛠️ Creative Tools
+* **Neon Mode:** Adds a glow filter and saturation boost for a cyberpunk aesthetic.
+* **Shape Shifting:** Switch particle shapes between **Squares**, **Circles**, and **Lines**.
+* **Color Studio:** Apply custom HSL color palettes or "Smart Filters" (e.g., typing "Fire" automatically applies a red/orange palette).
+* **Auto Pilot:** A "Van Gogh Mode" that automatically applies swirling forces to mimic the *Starry Night* flow.
 
----
-
-## 🚀 Tech Stack
-- **Frontend:** HTML5, CSS3 (Glassmorphism), JavaScript (ES6+)  
-- **Graphics:** HTML5 Canvas API  
-- **AI:** Google Gemini API  
-- **Hosting:** GitHub Pages
+### 💾 Export & Share
+* **Video Recording:** Native support to record high-quality (VP9/WebM) 5-second video clips of the animation.
+* **Snapshot:** High-resolution PNG export of the current frame.
+* **Undo/Redo System:** Full state management to revert accidental changes.
 
 ---
 
-## 📦 Installation & Usage
+## 🚀 How to Run
 
-```bash
-git clone https://github.com/Fatmanurkntr/van-gogh-studio.git
-```
+### Prerequisites
+* A modern web browser (Chrome, Edge, Firefox).
+* **Recommended:** A local development server (e.g., VS Code "Live Server" extension) to avoid CORS issues with image loading.
 
-Open `index.html` in any modern browser to start the app.
+### Installation
+1.  Clone or download the repository.
+2.  Open the project folder.
+3.  Launch `index.html` via a local server.
+    * *Note: Opening the file directly (`file://`) may block the canvas from reading image data due to browser security policies.*
 
+### Setting up AI Features
+To use the AI features (Analysis & Generation):
+1.  Get a free API Key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  Open the **AI Tools** section in the sidebar.
+3.  Paste your key into the "Paste Gemini API Key Here" field.
+4.  The key is saved locally in your browser (`localStorage`).
 
+---
 
+## 🎮 Controls
 
+| Control | Action |
+| :--- | :--- |
+| **Left Click + Drag** | Repel particles or Paint flow (depending on tool) |
+| **Sidebar Toggle** | Click the header to collapse/expand the UI |
+| **Eye Icon (View)** | Interactive Physics Mode (Repel particles) |
+| **Brush Icon** | Flow Paint Mode (Draw wind directions) |
+| **Spacebar** | Not mapped (Reserved for future shortcuts) |
+| **Enter** | Apply typed filter in Color Studio |
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend:** HTML5, CSS3 (Glassmorphism UI), Vanilla JavaScript (ES6+).
+* **Rendering:** HTML5 `<canvas>` API (2D Context).
+* **Physics:** Custom verlet-integration inspired physics loop.
+* **AI:** Google Generative Language API (Gemini 2.5 Flash).
+* **Fonts:** Google Fonts (Playfair Display, Inter, Courgette).
+
+---
+
+## 📂 Project Structure
+
+```text
+/
+├── index.html        # Main application file (CSS/JS included)
+└── README.md         # Documentation
