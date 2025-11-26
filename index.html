@@ -1564,6 +1564,88 @@
         }
     });
 
+    // --- MOBİL DOKUNMATİK DESTEĞİ (TOUCH SUPPORT) ---
+    // Bu kod parmağını fare gibi tanıtır
+    
+    function handleTouch(e) {
+        // Tuval üzerinde kaydırmayı engelle (Sayfa aşağı kaymasın)
+        if(e.target.tagName === 'CANVAS') {
+            e.preventDefault();
+        }
+        
+        // İlk parmağı al
+        const touch = e.touches[0];
+        
+        if (touch) {
+            // Canvas'ın o anki ekrandaki yerini ve boyutunu hesapla
+            const rect = canvasFg.getBoundingClientRect();
+            const scaleX = canvasFg.width / rect.width;
+            const scaleY = canvasFg.height / rect.height;
+
+            // Dokunulan yeri hesapla
+            mouse.x = (touch.clientX - rect.left) * scaleX;
+            mouse.y = (touch.clientY - rect.top) * scaleY;
+            
+            // Hız hesapla (Momentum için)
+            mouse.vx = Math.max(Math.min((mouse.x - mouse.lastX), 20), -20);
+            mouse.vy = Math.max(Math.min((mouse.y - mouse.lastY), 20), -20);
+            
+            // Eğer boyama (Paint) modundaysak çizim yap
+            if(currentTool === 'paint' && isMouseDown) {
+                paintFlow();
+                // Kılavuz çemberi parmağın olduğu yere taşı
+                if(cursorGuide) {
+                    cursorGuide.style.transform = `translate3d(${touch.clientX}px, ${touch.clientY}px, 0) translate(-50%, -50%)`;
+                }
+            }
+            
+            // Son konumu güncelle
+            mouse.lastX = mouse.x;
+            mouse.lastY = mouse.y;
+        }
+    }
+
+    // 1. Dokunma Başladığında (Mousedown gibi)
+    window.addEventListener('touchstart', (e) => {
+        if(e.target.tagName === 'CANVAS') {
+            isMouseDown = true;
+            handleTouch(e); // Konumu hemen güncelle
+            
+            // Paint modundaysak efekti başlat
+            if(currentTool === 'paint') {
+                tempSnapshot = createSnapshot(); 
+                isDrawingDirty = false; 
+                cursorGuide.style.display = 'block';
+                cursorGuide.style.borderColor = '#ff0055';
+                cursorGuide.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0) translate(-50%, -50%) scale(0.9)`;
+            }
+        }
+    }, {passive: false});
+
+    // 2. Parmağı Sürüklerken (Mousemove gibi)
+    window.addEventListener('touchmove', (e) => {
+        if(isMouseDown) {
+            handleTouch(e);
+        }
+    }, {passive: false});
+
+    // 3. Dokunma Bittiğinde (Mouseup gibi)
+    window.addEventListener('touchend', () => {
+        isMouseDown = false;
+        
+        if(currentTool === 'paint') {
+            if(isDrawingDirty && tempSnapshot) {
+                saveState(); 
+                tempSnapshot = null;
+            }
+            // Efekti sıfırla ve gizle
+            cursorGuide.style.borderColor = 'rgba(255,255,255,0.8)';
+            cursorGuide.style.transform = `scale(1)`;
+            cursorGuide.style.display = 'none';
+        }
+    });
+    // --- MOBİL DESTEK SONU ---
+
     document.getElementById('radius-slider').addEventListener('input', e => {
         mouse.radius = parseInt(e.target.value);
         document.getElementById('val-radius').innerText = mouse.radius + "px";
