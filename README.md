@@ -1,92 +1,105 @@
-# 🎨 Van Gogh Studio | Interactive Digital Art
+# 🌌 Van Gogh Studio | Interactive AI Art Experience
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Technology](https://img.shields.io/badge/HTML5_Canvas-JavaScript-yellow)
-![AI](https://img.shields.io/badge/Powered_by-Gemini_AI-purple)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
+![Technology](https://img.shields.io/badge/HTML5_Canvas-Vanilla_JS-yellow?style=flat-square)
+![AI Powered](https://img.shields.io/badge/AI-Google_Gemini-purple?style=flat-square)
 
-**Van Gogh Studio** is an immersive, browser-based interactive art application. It deconstructs static masterpieces into thousands of living particles, allowing users to interact with the artwork using physics simulations, audio reactivity, and generative AI tools.
+> **"I dream my painting and I paint my dream."** — Vincent van Gogh
 
-This project combines advanced **HTML5 Canvas** manipulation, **Flow Field** algorithms, and the **Google Gemini API** to create a unique blend of classic art and modern technology.
+**Van Gogh Studio** is an immersive creative coding experiment that deconstructs masterpieces into thousands of living, breathing particles. Built with raw **HTML5 Canvas** and physics simulations, it features audio reactivity, mobile touch support, and deep integration with **Google Gemini AI**.
 
 ---
 
 ## ✨ Key Features
 
-### 🖌️ Interactive Particle System
-* **Fluid Simulation:** The artwork comes alive with a custom physics engine. Particles react to mouse movements, creating fluid-like ripples and swirls.
-* **Deep Zoom:** A multi-layer canvas system (`Deep`, `Mid`, `Foreground`) provides a parallax effect and depth.
-* **Dynamic Density:** Users can adjust particle density in real-time, ranging from "Ultra High" detail to performance-optimized modes.
+### 🎨 Interactive Physics Engine
+* **Flow Fields:** The painting behaves like a fluid. Use your mouse or finger to disrupt the stars or paint new wind directions.
+* **Touch Support:** Fully optimized for mobile devices. Interact with the artwork using multi-touch gestures.
+* **Deep Zoom:** A multi-layered rendering system creates a 3D-like depth effect.
 
-### 🤖 AI Integration (Gemini)
-* **Art Critic Analysis:** Uses Gemini Vision to analyze the current canvas state and provide a poetic, artistic critique.
-* **Generative AI Painting:** Describe a scene, and the AI generates a raw SVG representation which is then particle-ized instantly.
-* **Prompt Magic:** Enhances simple user prompts into detailed artistic descriptions.
+### 🤖 Powered by Gemini AI
+* **Art Critic:** Uses **Gemini Vision** to analyze the current canvas state and provide poetic feedback.
+* **Generative Painting:** Describe a concept (e.g., "Cyberpunk Forest"), and the AI generates a raw SVG that instantly transforms into particles.
+* **Prompt Magic:** Enhances simple keywords into detailed artistic prompts.
 
 ### 🎵 Audio Reactivity
-* **Visualizer:** Activates the microphone to make the particles dance to music.
-* **Frequency Analysis:** Bass frequencies trigger particle size expansion, while treble frequencies affect movement intensity.
+* **Live Visualizer:** The particles dance to your music via microphone input.
+* **Frequency Response:** Bass frequencies expand particle size, while treble impacts movement chaos.
 
 ### 🛠️ Creative Tools
-* **Neon Mode:** Adds a glow filter and saturation boost for a cyberpunk aesthetic.
-* **Shape Shifting:** Switch particle shapes between **Squares**, **Circles**, and **Lines**.
-* **Color Studio:** Apply custom HSL color palettes or "Smart Filters" (e.g., typing "Fire" automatically applies a red/orange palette).
-* **Auto Pilot:** A "Van Gogh Mode" that automatically applies swirling forces to mimic the *Starry Night* flow.
-
-### 💾 Export & Share
-* **Video Recording:** Native support to record high-quality (VP9/WebM) 5-second video clips of the animation.
-* **Snapshot:** High-resolution PNG export of the current frame.
-* **Undo/Redo System:** Full state management to revert accidental changes.
+* **Neon Mode:** Switch to a cyberpunk aesthetic with glowing particles.
+* **Color Studio:** Apply smart color filters (e.g., typing "Fire" changes the palette to reds/oranges).
+* **Video Recording:** Native support to record **HQ WebM** videos of your creation.
+* **Auto Pilot:** A "Van Gogh Mode" that simulates the famous swirling motion automatically.
 
 ---
 
-## 🚀 How to Run
+## 🚀 Quick Start
 
-### Prerequisites
-* A modern web browser (Chrome, Edge, Firefox).
-* **Recommended:** A local development server (e.g., VS Code "Live Server" extension) to avoid CORS issues with image loading.
+This project is built as a **Single File Application** for maximum portability. No heavy `node_modules` or build steps required.
 
-### Installation
-1.  Clone or download the repository.
-2.  Open the project folder.
-3.  Launch `index.html` via a local server.
-    * *Note: Opening the file directly (`file://`) may block the canvas from reading image data due to browser security policies.*
+### 🌐 Live Demo
+[**Click here to view the project live**](https://fatmanurkntr.github.io/van-gogh-studio/)
 
-### Setting up AI Features
-To use the AI features (Analysis & Generation):
-1.  Get a free API Key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-2.  Open the **AI Tools** section in the sidebar.
-3.  Paste your key into the "Paste Gemini API Key Here" field.
-4.  The key is saved locally in your browser (`localStorage`).
+### 💻 Run Locally
+
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/Fatmanurkntr/van-gogh-studio.git](https://github.com/Fatmanurkntr/van-gogh-studio.git)
+    ```
+
+2.  **Open the file**
+    * It is highly recommended to use a local server (like VS Code "Live Server") to avoid browser CORS restrictions with images.
+    * Open `index.html` in your browser.
 
 ---
 
 ## 🎮 Controls
 
-| Control | Action |
+| Interaction | Action |
 | :--- | :--- |
-| **Left Click + Drag** | Repel particles or Paint flow (depending on tool) |
-| **Sidebar Toggle** | Click the header to collapse/expand the UI |
-| **Eye Icon (View)** | Interactive Physics Mode (Repel particles) |
-| **Brush Icon** | Flow Paint Mode (Draw wind directions) |
-| **Spacebar** | Not mapped (Reserved for future shortcuts) |
-| **Enter** | Apply typed filter in Color Studio |
+| **Mouse / Touch Drag** | Repel particles or Paint flow directions |
+| **Space / Click 'Auto'** | Toggle Auto-Pilot (Swirl Animation) |
+| **Sidebar Menu** | Access Color Studio, AI Tools, and Settings |
+| **Microphone Icon** | Enable Audio Reactivity |
+| **Camera Icon** | Take a high-res snapshot |
 
 ---
 
-## 🛠️ Tech Stack
+## 🔑 AI Setup (Optional)
 
-* **Frontend:** HTML5, CSS3 (Glassmorphism UI), Vanilla JavaScript (ES6+).
-* **Rendering:** HTML5 `<canvas>` API (2D Context).
-* **Physics:** Custom verlet-integration inspired physics loop.
-* **AI:** Google Generative Language API (Gemini 2.5 Flash).
-* **Fonts:** Google Fonts (Playfair Display, Inter, Courgette).
+To use the AI features (Analysis & Generation), you need a free API Key:
+
+1.  Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  Open the **"AI Tools"** section in the app sidebar.
+3.  Paste your key. It will be saved locally in your browser for future use.
 
 ---
 
-## 📂 Project Structure
+## 📱 Mobile Support
 
-```text
-/
-├── index.html        # Main application file (CSS/JS included)
-└── README.md         # Documentation
+The application automatically detects touch devices:
+* **Responsive UI:** The sidebar adapts to smaller screens.
+* **Touch Events:** Custom touch-to-mouse mapping ensures smooth interaction on iOS and Android.
+
+---
+
+## 🛠️ Technology Stack
+
+* **Core:** HTML5, CSS3, JavaScript (ES6+)
+* **Rendering:** HTML5 Canvas API (2D Context)
+* **AI:** Google Generative Language API (Gemini 2.5 Flash)
+* **Media:** MediaStream Recording API (for video export) & Web Audio API (for music visualization)
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  Created with ❤️ by <a href="https://github.com/Fatmanurkntr">Fatımanur Kantar</a>
+</p>
