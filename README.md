@@ -1,7 +1,6 @@
 # 🌌 Van Gogh Studio | Interactive AI Art Experience
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 ![Technology](https://img.shields.io/badge/HTML5_Canvas-Vanilla_JS-yellow?style=flat-square)
 ![AI Powered](https://img.shields.io/badge/AI-Google_Gemini-purple?style=flat-square)
 
@@ -91,7 +90,6 @@ The application automatically detects touch devices:
 * **Rendering:** HTML5 Canvas API (2D Context)
 * **AI:** Google Generative Language API (Gemini 2.5 Flash)
 * **Media:** MediaStream Recording API (for video export) & Web Audio API (for music visualization)
-
 
 ---
 
