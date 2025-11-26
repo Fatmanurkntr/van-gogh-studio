@@ -92,11 +92,6 @@ The application automatically detects touch devices:
 * **AI:** Google Generative Language API (Gemini 2.5 Flash)
 * **Media:** MediaStream Recording API (for video export) & Web Audio API (for music visualization)
 
----
-
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
 
 ---
 
