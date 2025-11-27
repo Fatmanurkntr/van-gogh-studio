@@ -250,77 +250,110 @@
 
        /* --- RESPONSIVE --- */
         
+        /* --- RESPONSIVE AYARLAR (FİNAL & KESİN) --- */
+
+        /* 1. MOBİL DİKEY (PORTRAIT) - Yazı Taşmasını Önleyen Kod */
         @media (max-width: 768px) {
-            
-            
             #intro-layer {
-                padding: 0 30px;
+                padding: 0 15px; /* Kenar boşluğu */
                 text-align: center;
-                backdrop-filter: blur(2px); 
+                backdrop-filter: blur(3px);
+                width: 100%; /* Genişlik garanti olsun */
+                box-sizing: border-box;
             }
 
-            
             .hero-title { 
-                font-size: 11vw; 
+                /* SİHİRLİ KOD: clamp(min, tercih, max) */
+                /* En küçük 2rem, ideali ekranın %10'u, en büyük 3.5rem olsun */
+                /* Bu sayede asla ekranı delip geçmez */
+                font-size: clamp(2rem, 10vw, 3.5rem); 
+                
                 line-height: 1.1; 
-                margin-top: 15px;
+                margin-top: 20px;
                 margin-bottom: 10px;
                 width: 100%;
-                word-wrap: break-word; 
-                overflow-wrap: break-word;
+                
+                /* Uzun kelimeyi zorla aşağı at */
+                overflow-wrap: break-word; 
+                word-wrap: break-word;
+                hyphens: auto; 
             }
 
             .poetic-text { 
-                font-size: 1.2rem; 
+                font-size: clamp(1.2rem, 5vw, 1.8rem); /* Bu da orantılı küçülsün */
                 margin-bottom: 5px;
-                opacity: 0.9;
             }
 
             .hero-subtitle { 
-                font-size: 0.75rem; 
-                margin-top: 5px; 
-                margin-bottom: 2.5rem;
-                letter-spacing: 3px;
-                opacity: 0.8;
+                font-size: 0.8rem; 
+                margin-bottom: 2rem;
+                letter-spacing: 2px;
             }
             
-           
             #start-btn {
-                width: 80%; 
-                padding: 18px 0; 
+                width: 70%;
+                padding: 15px;
                 font-size: 1rem;
             }
 
-           
+            /* Sidebar Dikeyde Aşağıda */
             #sidebar { 
                 top: auto; bottom: 0; left: 0; right: 0; 
-                width: 100%; height: 60vh;
-                border-radius: 24px 24px 0 0; 
-                max-height: 60vh; 
+                width: 100%; 
+                height: 50vh; 
+                border-radius: 20px 20px 0 0; 
+                max-height: 50vh; 
+                transform: translateY(0); /* Kayma önleyici */
             }
-            #sidebar.collapsed { height: 70px; }
+            #sidebar.collapsed { height: 60px; } 
             
             #gemini-modal { width: 90%; }
         }
 
-        /* (LANDSCAPE) MODE */
-        @media (max-width: 900px) and (orientation: landscape) {
-            .hero-title { font-size: 8vh; } 
+        /* 2. MOBİL YATAY (LANDSCAPE) - Sidebar Sorununu Çözen Kod */
+        /* max-height: 500px diyerek sadece telefonları hedefliyoruz (Tabletler etkilenmez) */
+        @media (max-height: 500px) and (orientation: landscape) {
+            
+            .hero-title { font-size: 2rem; } /* Yatayda küçük olsun */
             
             #intro-layer {
                 flex-direction: row; 
-                gap: 30px;
-                padding: 0 50px;
+                gap: 20px;
+                padding: 0 40px;
+            }
+
+            /* Sidebar'ı düzeltiyoruz */
+            #sidebar {
+                top: 0; 
+                bottom: 0; 
+                right: 0; 
+                left: auto; /* Solu serbest bırak */
+                
+                width: 260px; /* Genişliği azalttık ki ekranı yemesin */
+                height: 100%; /* Tam boy */
+                
+                border-radius: 15px 0 0 15px;
+                max-height: 100vh;
+                
+                /* İçeriğin kaybolmaması için kaydırma çubuğu ekle */
+                overflow-y: auto; 
+            }
+
+            /* Kapalıyken çok az yer kaplasın */
+            #sidebar.collapsed { 
+                width: 40px; 
+                height: 100%;
             }
             
-            #sidebar {
-                top: 0; right: 0; bottom: 0; left: auto;
-                width: 300px; height: 100%;
-                border-radius: 20px 0 0 20px;
-                max-height: 100vh;
+            #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
+            
+            /* Toggle ikonunu ortala */
+            .sidebar-header {
+                padding: 10px;
             }
-            #sidebar.collapsed { width: 50px; height: 100%; }
-            #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(0deg); }
+            .sidebar-header h2 {
+                font-size: 0.9rem; /* Başlık sığsın */
+            }
         }
         
     
