@@ -204,42 +204,48 @@
         /* --- MOBİL UYUMLULUK (SON HALİ) --- */
         /* ========================================= */
 
+        /* --- MOBİL NETLİK DÜZELTMESİ (Pikselleşmeyi Kaldırır) --- */
         @media (max-width: 768px) {
-
-            html, body {
-                background-attachment: scroll !important; 
-                background-position: center center !important;
-                background-size: cover !important;
-                /* Mobilde adres çubuğu sorunu olmasın diye yüksekliği sabitle */
-                height: 100vh; 
-                min-height: -webkit-fill-available;
-            }
             
-            /* GİRİŞ EKRANI (NET GÖRÜNTÜ İÇİN) */
+            /* 1. GİRİŞ EKRANI */
             #intro-layer {
-                /* Blur'u kaldırdık, sadece hafif karartma */
-                backdrop-filter: none; 
+                /* SORUNLU KODU İPTAL EDİYORUZ: */
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important; /* iPhone için */
+                
+                /* YERİNE BUNU KULLANIYORUZ: */
+                /* Sadece siyah bir perde çekiyoruz, resim net kalıyor */
+                background: rgba(0, 0, 0, 0.5) !important; 
+                
+                /* Düzen Ayarları */
+                justify-content: center;
                 padding: 0 25px;
             }
 
-            /* UYGULAMA İÇİ (ESKİ BULANIK HALİ KORUNDU) */
-            /* #canvas-bg-deep ve #canvas-bg-mid ayarlarını değiştirmedik, yukarıdaki default'u kullanacak */
+            /* 2. ARKA PLAN RESMİ */
+            html, body {
+                /* Tarayıcıya 'pikselleştirme, yumuşat' emri veriyoruz */
+                image-rendering: auto !important; 
+                
+                /* Mobilde resmi sabitleme (fixed) performans sorunu yaratır, kapatıyoruz */
+                background-attachment: scroll !important;
+                background-position: center center !important;
+                background-size: cover !important;
+                height: 100vh;
+            }
 
-            /* Yazı Boyutları */
+            /* 3. YAZI BOYUTLARI (Önceki ayarların aynısı) */
             .hero-title { 
                 font-size: clamp(2.5rem, 10vw, 4rem); 
                 margin: 10px 0;
             }
-
             .poetic-text { font-size: 1.3rem; margin-bottom: 5px; }
-            .hero-subtitle { font-size: 0.85rem; margin-bottom: 2rem; }
             
-            /* Sidebar Düzeni */
+            /* 4. SIDEBAR DÜZENİ */
             #sidebar { 
                 top: auto; bottom: 0; left: 0; right: 0; 
                 width: 100%; height: 55vh; max-height: 55vh;
                 border-radius: 24px 24px 0 0; 
-                border-bottom: none; border-left: none; border-right: none;
             }
             #sidebar.collapsed { height: 70px; } 
             #gemini-modal { width: 85%; }
