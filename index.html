@@ -479,6 +479,8 @@
     let flowField = [];
     const flowRes = 15;
     let rows, cols;
+    // Diğer 'let' tanımlarının yanına ekle
+    let currentOriginalImage = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
     
     let sourceImage = new Image();
     let currentTool = 'view';
@@ -910,7 +912,7 @@
             this.brightness = brightness;
             
             // SIZE FIX: Balanced for solid look without clunkiness
-            this.baseSize = Math.max(particleDensity * 1.4, brightness * particleDensity * 1.9);
+            this.baseSize = Math.max(particleDensity * 1.0, brightness * particleDensity * 1.4);
             
             this.vx = 0; 
             this.vy = 0;
@@ -925,18 +927,18 @@
             const index = col + row * cols;
             let hasFlow = false;
 
-            // --- 1. FIRÇA (FLOW) ETKİSİ (Yavaş ve Sakin Ayar) ---
+            
             if (flowField[index] !== undefined && flowField[index] !== null) {
                 const angle = flowField[index];
-                this.angle = angle; // Yönü fırçaya kilitle (Dönme sorunu yok)
+                this.angle = angle; 
                 
-                const pushStrength = 0.15; // Yavaş hızlanma
+                const pushStrength = 0.15;
                 this.vx += Math.cos(angle) * pushStrength;
                 this.vy += Math.sin(angle) * pushStrength;
                 hasFlow = true; 
             }
 
-            // --- 2. MOUSE İTME (VIEW) ---
+            
             if(currentTool === 'view' && mouse.x !== 0) {
                 const interactionRadius = mouse.radius * 2.0;
                 const dx = mouse.x - this.x;
@@ -953,14 +955,23 @@
                 }
             }
 
-            // --- 3. AUDIO ETKİSİ (SENİN İSTEDİĞİN ORİJİNAL KOD) ---
-            // Burası aynen senin attığın kod bloğudur.
-            let isBassHit = false; // Hız limitini kaldırmak için bayrak
+            if(isAutoPilot) {
+                const t = time * 0.0005; 
+                
+                const waveX = Math.sin(this.y * 0.002 + t);
+                const waveY = Math.cos(this.x * 0.002 + t);
+                
+                const autoPower = speedFactor * 0.02; 
+                
+                this.vx += waveX * autoPower;
+                this.vy += waveY * autoPower;
+            }
 
+            // --- 4. AUDIO  ---
+            let isBassHit = false; 
             if(isAudioActive && audioLevel > 20) {
-                // Bass (Patlama ve Merkezden Kaçış)
                 if(audioBass > 130) {
-                    isBassHit = true; // Bass vurdu!
+                    isBassHit = true; 
                     const intensity = (audioBass - 130) / 125;
                     this.vx += (Math.random() - 0.5) * intensity * 1.5;
                     this.vy += (Math.random() - 0.5) * intensity * 1.5;
@@ -973,22 +984,20 @@
                          this.vy += (dy/dist) * intensity * 2.0;
                     }
                 }
-                // Treble (Dalgalanma)
                 if(audioTreble > 80) {
                     const intensity = (audioTreble - 80) / 175;
-                    const wave = Math.sin(this.y * 0.03 + time * 0.2);
-                    this.vx += wave * intensity * 2.5;
+                    this.vx += Math.sin(this.y * 0.03 + time * 0.2) * intensity * 2.5;
                 }
             }
 
-            // --- 4. HAREKET MANTIĞI VE LİMİTLER ---
+            
+            const isFlowing = hasFlow || isAutoPilot;
 
-            if (hasFlow) {
-                // Normalde hız limiti çok düşüktür (0.3) - Sakin akış için
-                let maxSpeed = speedFactor * this.speedMod * 0.3;
+            if (isFlowing) {
+                let speedMultiplier = isAutoPilot ? 0.15 : 0.3;
                 
-                // AMA: Eğer Bass vurduysa limiti 10 katına çıkar!
-                // Yoksa senin audio kodun çalışır ama hız limiti yüzünden görünmez.
+                let maxSpeed = speedFactor * this.speedMod * speedMultiplier;
+                
                 if (isBassHit) maxSpeed = 10; 
 
                 this.vx = Math.max(Math.min(this.vx, maxSpeed), -maxSpeed);
@@ -997,24 +1006,22 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Mesafe Limiti (Çamurlaşma Önleyici)
                 const dx = this.x - this.originX;
                 const dy = this.y - this.originY;
                 
-                // Müzik varken biraz daha dağılabilirler (1000), yoksa kısa tut (625)
-                const distLimit = isBassHit ? 1000 : 625;
+                const limit = isAutoPilot ? 2000 : 625;
 
-                if (dx * dx + dy * dy > distLimit) { 
-                    this.x = this.originX + (Math.random() - 0.5); 
-                    this.y = this.originY + (Math.random() - 0.5);
+                if (dx * dx + dy * dy > limit) { 
+                    this.x = this.originX + (Math.random() - 0.5) * 5; 
+                    this.y = this.originY + (Math.random() - 0.5) * 5;
+                    
+                    if(!isAutoPilot) { this.vx = 0; this.vy = 0; }
                 }
 
             } else {
-                // View Modu (Geri Dönüş)
                 const dx = this.originX - this.x;
                 const dy = this.originY - this.y;
                 
-                // Müzik varsa geri dönüşü gevşet ki dans etsinler
                 const returnForce = isBassHit ? 0.01 : 0.08; 
 
                 this.vx += dx * returnForce; 
@@ -1027,22 +1034,12 @@
                 this.y += this.vy;
             }
 
-            // Sınır koruması
             if (this.x < 0 || this.x > canvasFg.width || this.y < 0 || this.y > canvasFg.height) {
                 this.x = this.originX; this.y = this.originY;
                 this.vx = 0; this.vy = 0;
             }
-            
-            // Auto Pilot (Ekstra dalgalanma)
-            if(isAutoPilot) {
-                const t = time * 0.005; 
-                const waveX = Math.sin(this.y * 0.01 + t);
-                const waveY = Math.cos(this.x * 0.01 + t);
-                const power = speedFactor * 0.15; 
-                this.vx += waveX * power;
-                this.vy += waveY * power;
-            }
         }
+        
         draw() {
             ctxFg.globalCompositeOperation = 'source-over';
             
@@ -1618,11 +1615,15 @@
         if(this.files && this.files[0]) {
             saveState();
             const reader = new FileReader();
-             reader.onload = (ev) => { 
+            reader.onload = (ev) => { 
                 const newSrc = ev.target.result;
                 
+                // --- BURASI EKLENDİ ---
+                // Artık "Reset" tuşu bu yeni resmi baz alacak
+                currentOriginalImage = newSrc; 
+                // ---------------------
+
                 sourceImage.src = newSrc; 
-                
                 document.body.style.backgroundImage = `url(${newSrc})`;
                 
                 showNotification("New Art Uploaded");
@@ -1630,6 +1631,8 @@
             reader.readAsDataURL(this.files[0]);
         }
     });
+
+
 
     window.saveSnapshot = function() {
         showNotification("Capturing Art...");
@@ -1736,39 +1739,32 @@
     
     function resetToOriginal() {
         saveState();
-        showNotification("Original Colors Restored");
+        showNotification("Colors Reset (Flow Kept)");
 
-        // 1. Renkleri ve filtreleri sıfırla
         activeFilterColor = null; 
         currentPalette = null;
-        particles.forEach(p => p.color = p.originalColor);
         
-        // 2. Arka planı (Canvas katmanlarını) temizle
+        particles.forEach(p => {
+            p.color = p.originalColor;
+        });
+        
         refreshBackgrounds(false);
         
-        // 3. Renk seçiciyi maviye çek
-        document.getElementById('custom-color-picker').value = "#63b3ed";
+        const picker = document.getElementById('custom-color-picker');
+        if(picker) picker.value = "#63b3ed";
         
-        // --- YENİ EKLENEN KISIM ---
-        // 4. Resmi Orijinal Van Gogh'a Döndür (Eğer kendi resmini yüklediyse sıfırlansın)
-        const defaultUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg';
-        
-        sourceImage.src = defaultUrl; // Canvas kaynağını değiştir
-        document.body.style.backgroundImage = `url(${defaultUrl})`; // Arka plan duvar kağıdını değiştir
-    
-         canvasDeep.style.filter = "blur(10px) brightness(0.6)"; 
         
     }
 
     function refreshBackgrounds(isTinted, color = null) {
         if(isTinted && color) {
-            // Boyalı halini çiz
+            
             tintLayer(ctxMid, canvasMid, color, renderProps);
             tintLayer(ctxDeep, canvasDeep, color, {x:0, y:0, w:canvasDeep.width, h:canvasDeep.height});
             canvasMid.style.filter = "none";
             canvasDeep.style.filter = "blur(40px)";
         } else {
-            // Orijinal halini çiz
+            
             ctxMid.globalCompositeOperation = 'source-over';
             ctxMid.clearRect(0, 0, canvasMid.width, canvasMid.height);
             ctxMid.drawImage(sourceImage, renderProps.x, renderProps.y, renderProps.w, renderProps.h);
