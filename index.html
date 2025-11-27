@@ -10,6 +10,7 @@
     <meta property="og:url" content="https://fatmanurkntr.github.io/van-gogh-studio/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&family=Courgette&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='32' fill='%23020617'/><path d='M32 12c-11.046 0-20 8.954-20 20s8.954 20 20 20 20-8.954 20-20S43.046 12 32 12z' fill='none' stroke='%2363b3ed' stroke-width='3' stroke-dasharray='4 6' opacity='0.5'/><path d='M32 18c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14z' fill='none' stroke='%23fcd34d' stroke-width='4' stroke-dasharray='3 5'/><circle cx='32' cy='32' r='6' fill='%23fcd34d'/><circle cx='32' cy='32' r='3' fill='%23ffffff'/></svg>"><style>
         :root {
             --primary: #fcd34d; 
@@ -228,38 +229,82 @@
         }
 
         /* 2. YATAY MOD (Landscape) - TELEFONLAR İÇİN */
+        /* --- YATAY (LANDSCAPE) MODU İÇİN ÖZEL DÜZELTME --- */
+        /* Sadece telefonlar yan çevrilince çalışır */
         @media (max-height: 500px) and (orientation: landscape) {
             
-            .hero-title { font-size: 2rem; }
-            .poetic-text { font-size: 1.2rem; }
-            
+            /* 1. Giriş Ekranı Düzeni (Yan Yana) */
             #intro-layer {
-                flex-direction: row; 
-                gap: 20px;
-                padding: 0 40px;
+                flex-direction: row; /* Yazı solda, buton sağda olsun */
+                align-items: center;
+                justify-content: center;
+                gap: 40px; /* Aralarında boşluk */
+                padding: 0 60px; /* Kenarlardan güvenli boşluk */
+            }
+
+            .hero-title { 
+                font-size: 10vh; /* Ekran yüksekliğine göre ayarla */
+                margin: 0;
+                text-align: left;
             }
             
+            .poetic-text {
+                font-size: 6vh;
+                text-align: left;
+            }
+            
+            .hero-subtitle { display: none; } /* Yer kaplamasın diye alt başlığı gizle */
+
+            #start-btn {
+                width: auto;
+                min-width: 150px;
+                margin-top: 0;
+            }
+
+            /* 2. Sidebar (Menü) Düzeni */
             #sidebar {
-                /* Sağ tarafa yapışık panel */
-                top: 0; bottom: 0; right: 0; left: auto;
+                /* Konumlandırma: Tam Sağ Taraf */
+                position: fixed;
+                top: 0; 
+                bottom: 0; 
+                right: 0; 
+                left: auto;
                 
-                width: 270px; /* Genişliği azalttık */
-                height: 100%; 
-                max-height: 100%;
+                /* Boyutlar */
+                width: 260px; /* İdeal genişlik */
+                height: 100%; /* Ekranı boydan boya kapla */
+                max-height: 100vh;
                 
-                border-radius: 20px 0 0 20px;
+                /* Görünüm */
+                border-radius: 20px 0 0 20px; /* Sadece sol tarafı yuvarla */
                 border-right: none; border-top: none; border-bottom: none;
+                
+                /* İçerik Sığmazsa Kaydır */
+                overflow: hidden; 
+                display: flex;
+                flex-direction: column;
             }
             
+            .sidebar-content {
+                flex: 1;
+                overflow-y: auto; /* İÇERİK KAYDIRILABİLİR OLSUN */
+                padding: 15px;
+            }
+
+            /* Kapalıyken (Collapsed) İnce Şerit Olsun */
             #sidebar.collapsed { 
-                width: 50px; 
+                width: 45px; 
                 height: 100%;
             }
             
             #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
             
-            /* İçerik kaydırılabilir olsun */
-            .sidebar-content { padding: 15px; }
+            /* Başlık kısmını küçült */
+            .sidebar-header {
+                padding: 10px 15px;
+                min-height: 50px;
+            }
+            .sidebar-header h2 { font-size: 0.9rem; }
         }
         
     
