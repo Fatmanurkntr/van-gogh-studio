@@ -229,34 +229,21 @@
         
         #cursor-guide { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; display: none; mix-blend-mode: difference; transition: width 0.1s, height 0.1s; will-change: transform; }
 
-        /* ========================================= */
-        /* --- MOBİL UYUMLULUK (FİNAL ÇÖZÜM) --- */
-        /* ========================================= */
-
-        /* ========================================= */
-        /* --- MOBİL UYUMLULUK (ESTETİK & HAREKETLİ) --- */
-        /* ========================================= */
+        
 
         @media (max-width: 768px) {
             
-            /* 1. GİRİŞ EKRANI (HEM NET HEM HAREKETLİ) */
             #intro-layer {
-                /* Arka planı tamamen kapatmıyoruz, %85 opaklık veriyoruz */
-                /* Böylece arkadaki hareketli parçacıklar hafifçe belli oluyor */
                 background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg') !important;
                 background-size: cover !important;
                 background-position: center center !important;
                 
-                /* Kilit Nokta: Resmi biraz şeffaflaştır ki arkadaki hareket görünsün */
-                /* Ama çok değil, yoksa yine pikselleşme belli olur. 0.85 idealdir. */
                 opacity: 1; 
                 
-                /* Resmi karartmak ve kenarlara vinyet atmak için (Sinematik Görünüm) */
                 box-shadow: inset 0 0 100px 50px rgba(0, 0, 0, 0.7); 
                 
-                /* Yazıların okunabilirliği için genel bir karartma filtresi */
-                background-color: rgba(2, 6, 23, 0.4); /* Koyu mavi tonlu filtre */
-                background-blend-mode: multiply; /* Resmi renkle kaynaştır (Daha doygun renkler) */
+                background-color: rgba(2, 6, 23, 0.4); 
+                background-blend-mode: multiply;
 
                 backdrop-filter: none !important; 
                 padding: 0 25px;
@@ -264,12 +251,12 @@
                 z-index: 999;
             }
 
-            /* 2. ANA BAŞLIK (DAHA PARLAK) */
+            
             .hero-title { 
                 font-size: clamp(2.8rem, 11vw, 4.5rem); 
                 margin: 15px 0;
                 line-height: 1.1;
-                /* Altın rengi parlamayı güçlendirdik */
+                
                 text-shadow: 0 0 20px rgba(252, 211, 77, 0.6), 0 5px 15px rgba(0,0,0,0.9);
             }
 
@@ -283,12 +270,11 @@
                 letter-spacing: 3px; font-weight: 600;
             }
             
-            /* 3. BUTON (CANLI) */
+            
             #start-btn {
                 width: 80%;
                 padding: 18px 0;
                 font-size: 1.1rem;
-                /* Butonun arkasını biraz bulanıklaştır ki resimden ayrılsın */
                 background: rgba(252, 211, 77, 0.15); 
                 backdrop-filter: blur(10px); 
                 border: 2px solid var(--primary);
@@ -315,7 +301,7 @@
             #gemini-modal { width: 90%; }
         }
 
-        /* 5. YATAY (LANDSCAPE) MODU */
+        /* 5.  (LANDSCAPE) MODE */
         @media (max-height: 500px) and (orientation: landscape) {
             .hero-title { font-size: 2rem; }
             .poetic-text { font-size: 1.2rem; }
@@ -573,7 +559,11 @@
         if(sharedDensity) {
             particleDensity = parseInt(sharedDensity);
         } else {
-            particleDensity = 6; 
+            if (window.innerWidth < 768) {
+                particleDensity = 4; 
+            } else {
+                particleDensity = 9; 
+            }
         }
 
         sourceImage.crossOrigin = "Anonymous";
