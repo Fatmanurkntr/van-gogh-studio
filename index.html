@@ -21,81 +21,69 @@
             --text-muted: #94a3b8;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; /* Sayfa kaymasını engeller */
             background-color: var(--dark-bg);
             font-family: 'Inter', sans-serif;
             color: var(--text-main);
             user-select: none; touch-action: none;
+            
+            /* Mobil kayma/zıplama engelleyici */
+            overscroll-behavior: none;
+            position: fixed; 
+            
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/2560px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
 
-        /* Container for stacked canvases with Zoom support */
         #canvas-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             transform-origin: center center;
             opacity: 0; 
             transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
-            
-            
         }
 
         canvas { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; 
-            height: 100%; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             image-rendering: auto; 
-            image-rendering: -webkit-optimize-contrast;
         }
         
-        /* Layer 1: Deep Blur Background */
-        #canvas-bg-deep {
-            z-index: 0;
-            filter: blur(10px) brightness(0.6); 
-            object-fit: cover;
-        }
+        #canvas-bg-deep { z-index: 0; filter: blur(10px) brightness(0.6); object-fit: cover; }
+        #canvas-bg-mid { z-index: 1; filter: blur(2px) brightness(0.9); opacity: 1.0; }
+        #canvas-fg { z-index: 2; }
 
-        /* Layer 2: Mid Background */
-        #canvas-bg-mid {
-            z-index: 1;
-            filter: blur(2px) brightness(0.9); 
-            opacity: 1.0; 
-        }
-
-        /* Layer 3: Particles */
-        #canvas-fg {
-            z-index: 2;
-        }
-
-        /* INTRO OVERLAY */
+        /* INTRO LAYER (SABİTLENMİŞ) */
         #intro-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 100;
-            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.5) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.6) 100%);
             backdrop-filter: blur(4px); 
             transition: opacity 0.8s ease, visibility 0.8s;
+            padding: 20px;
         }
 
         @keyframes floatText {
             0%   { transform: translateY(0px); opacity: 0.9; }
-            50%  { transform: translateY(-15px); opacity: 1; }
+            50%  { transform: translateY(-10px); opacity: 1; }
             100% { transform: translateY(0px); opacity: 0.9; }
         }
 
         .hero-title {
-            font-family: 'Playfair Display', serif; font-size: 6rem; 
+            font-family: 'Playfair Display', serif; 
+            /* Masaüstü Varsayılan */
+            font-size: 5rem; 
             color: var(--primary);
-            text-shadow: 0 0 60px rgba(252, 211, 77, 0.4); margin: 0;
+            text-shadow: 0 0 60px rgba(252, 211, 77, 0.4); 
+            margin: 0;
             text-align: center; letter-spacing: 2px;
-            line-height: 1.2;
+            line-height: 1.1;
             position: relative; z-index: 1;
             animation: floatText 6s ease-in-out infinite;
         }
@@ -110,12 +98,11 @@
         
         .poetic-text {
             font-family: 'Courgette', cursive; 
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #ffffff; 
             opacity: 0.95;
-            margin-bottom: -10px; 
+            margin-bottom: 0px; 
             text-shadow: 0 2px 15px rgba(0,0,0,0.8);
-            font-weight: 400;
             position: relative; z-index: 2;
             animation: floatText 7s ease-in-out infinite;
             animation-delay: 0.5s;
@@ -129,14 +116,13 @@
             backdrop-filter: blur(5px); transition: all 0.3s ease;
             text-transform: uppercase; letter-spacing: 2px;
         }
-        #start-btn:hover {
-            background: var(--primary); color: #000; 
-            box-shadow: 0 0 40px rgba(252, 211, 77, 0.6); transform: scale(1.05);
-        }
 
         .app-ui { opacity: 0; visibility: hidden; transition: opacity 0.5s ease 0.5s; position: fixed; z-index: 50; }
 
+        /* SIDEBAR GENEL AYARLARI */
         #sidebar {
+            /* Varsayılan (Masaüstü) */
+            position: fixed; /* Absolute yerine Fixed yaptık, kaymayı önler */
             top: 20px; right: 20px; width: 320px; 
             max-height: 90vh; 
             background: var(--panel-bg); backdrop-filter: blur(20px);
@@ -152,54 +138,38 @@
             padding: 15px 20px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; background: rgba(255,255,255,0.02);
+            min-height: 60px; /* Tıklama alanı garanti olsun */
         }
-        .sidebar-header:hover { background: rgba(255,255,255,0.05); }
         .sidebar-header h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin: 0; color: var(--primary); }
-        
         #sidebar-toggle-icon { font-size: 0.8rem; color: var(--text-muted); transition: transform 0.3s; }
         #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
 
         .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; opacity: 1; transition: opacity 0.3s; }
         #sidebar.collapsed .sidebar-content { opacity: 0; pointer-events: none; }
-        
-        .sidebar-content::-webkit-scrollbar { width: 4px; }
-        .sidebar-content::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
+        /* BUTON VE SLIDER STILLERI */
         .section { margin-bottom: 25px; }
-        .section-title {
-            font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;
-            letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .section-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); opacity: 0.3; }
-
         .row { display: flex; gap: 8px; margin-bottom: 10px; }
         .col { flex: 1; }
-
-        button {
-            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.05); color: var(--text-main);
-            cursor: pointer; transition: all 0.2s; font-size: 0.85rem; font-weight: 600;
-            display: flex; align-items: center; justify-content: center; gap: 6px; letter-spacing: 0.5px;
-        }
-        button:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
-        button.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(99, 179, 237, 0.3); }
-        button.primary { border-color: var(--primary); color: var(--primary); }
-        button.primary:hover { background: var(--primary); color: #000; }
-        
-        .btn-paint.active { background: #ff0055; border-color: #ff0055; box-shadow: 0 0 15px rgba(255,0,85,0.3); }
-        .btn-ai { border: 1px solid #a855f7; color: #a855f7; background: rgba(168,85,247,0.05); }
-        .btn-ai:hover { background: #a855f7; color: #fff; }
-        .btn-audio.active { background: #10b981; border-color: #10b981; color: #fff; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); transition: transform 0.05s; }
-        .btn-auto.active { background: #f97316; border-color: #f97316; color: #fff; box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); }
-        .btn-video { border-color: #ef4444; color: #ef4444; }
-        .btn-video:hover { background: #ef4444; color: #fff; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
         .btn-video.recording { background: #ef4444; color: #fff; animation: pulse-red 1s infinite; }
         @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .shape-btn { font-size: 1.2rem !important; padding: 6px !important; }
         
+        /* DİĞER ARAYÜZ ELEMANLARI */
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; color: #fff; margin-bottom: 8px; }
+        .slider-group { margin-bottom: 15px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
+        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
+        
+        #loading { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; color: var(--primary); border: 1px solid var(--border); z-index: 200; display: none; }
+        #notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: rgba(252, 211, 77, 0.9); color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #gemini-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px; z-index: 300; backdrop-filter: blur(10px); color: #fff; }
+        .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
         .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -207,153 +177,89 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
+        
+        #cursor-guide { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; display: none; mix-blend-mode: difference; transition: width 0.1s, height 0.1s; will-change: transform; }
 
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 6px; color: #fff; font-family: inherit; font-size: 0.85rem; margin-bottom: 8px; }
-        input:focus { outline: none; border-color: var(--primary); }
-        
-        .slider-group { margin-bottom: 15px; }
-        .slider-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
-        input[type="range"] { width: 100%; -webkit-appearance: none; background: transparent; }
-        input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -5px; }
+        /* ========================================= */
+        /* --- MOBİL UYUMLULUK (DÜZELTİLMİŞ) --- */
+        /* ========================================= */
 
-        #loading { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; color: var(--primary); letter-spacing: 1px; border: 1px solid var(--border); z-index: 200; display: none; }
-        
-        #cursor-guide { 
-            position: fixed; 
-            top: 0; left: 0; 
-            pointer-events: none; 
-            z-index: 9999; 
-            border: 2px solid rgba(255,255,255,0.8); 
-            border-radius: 50%; 
-            display: none; 
-            mix-blend-mode: difference; 
-            transition: width 0.1s, height 0.1s;
-            will-change: transform; 
-        }
-        
-        #notification { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: rgba(252, 211, 77, 0.9); color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        
-        #flash-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff;
-            opacity: 0; pointer-events: none; z-index: 1000;
-            transition: opacity 0.1s ease-out; 
-            mix-blend-mode: overlay; 
-        }
-        
-        @keyframes spin-back { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
-        .anim-spin-back { animation: spin-back 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        #gemini-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px; z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3); backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6; }
-        .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
-
-       /* --- RESPONSIVE --- */
-        
-        /* --- RESPONSIVE AYARLAR (FİNAL & KESİN) --- */
-
-        /* 1. MOBİL DİKEY (PORTRAIT) - Yazı Taşmasını Önleyen Kod */
+        /* 1. DİKEY MOD (Portrait) */
         @media (max-width: 768px) {
             #intro-layer {
-                padding: 0 15px; /* Kenar boşluğu */
-                text-align: center;
-                backdrop-filter: blur(3px);
-                width: 100%; /* Genişlik garanti olsun */
-                box-sizing: border-box;
+                /* Flexbox ile dikey ortalama */
+                justify-content: center;
+                padding: 0 25px;
             }
 
             .hero-title { 
-                /* SİHİRLİ KOD: clamp(min, tercih, max) */
-                /* En küçük 2rem, ideali ekranın %10'u, en büyük 3.5rem olsun */
-                /* Bu sayede asla ekranı delip geçmez */
-                font-size: clamp(2rem, 10vw, 3.5rem); 
-                
-                line-height: 1.1; 
-                margin-top: 20px;
-                margin-bottom: 10px;
-                width: 100%;
-                
-                /* Uzun kelimeyi zorla aşağı at */
-                overflow-wrap: break-word; 
-                word-wrap: break-word;
-                hyphens: auto; 
+                /* ARTIK ZIPLAMA YOK: Sabit boyut (rem) kullanıyoruz */
+                font-size: 2.8rem; 
+                margin: 10px 0;
             }
 
             .poetic-text { 
-                font-size: clamp(1.2rem, 5vw, 1.8rem); /* Bu da orantılı küçülsün */
+                font-size: 1.3rem; 
                 margin-bottom: 5px;
             }
 
             .hero-subtitle { 
-                font-size: 0.8rem; 
+                font-size: 0.85rem; 
                 margin-bottom: 2rem;
-                letter-spacing: 2px;
             }
             
-            #start-btn {
-                width: 70%;
-                padding: 15px;
-                font-size: 1rem;
-            }
-
-            /* Sidebar Dikeyde Aşağıda */
             #sidebar { 
+                /* Ekranın altına yapışık panel */
                 top: auto; bottom: 0; left: 0; right: 0; 
                 width: 100%; 
-                height: 50vh; 
-                border-radius: 20px 20px 0 0; 
-                max-height: 50vh; 
-                transform: translateY(0); /* Kayma önleyici */
+                height: 55vh; 
+                max-height: 55vh;
+                border-radius: 24px 24px 0 0; 
+                border-bottom: none;
+                border-left: none; border-right: none;
             }
-            #sidebar.collapsed { height: 60px; } 
             
-            #gemini-modal { width: 90%; }
+            #sidebar.collapsed { 
+                height: 70px; /* Daha kolay tıklama alanı */
+            } 
+            
+            /* Modal mobilde tam ortada olsun */
+            #gemini-modal { width: 85%; }
         }
 
-        /* 2. MOBİL YATAY (LANDSCAPE) - Sidebar Sorununu Çözen Kod */
-        /* max-height: 500px diyerek sadece telefonları hedefliyoruz (Tabletler etkilenmez) */
+        /* 2. YATAY MOD (Landscape) - TELEFONLAR İÇİN */
         @media (max-height: 500px) and (orientation: landscape) {
             
-            .hero-title { font-size: 2rem; } /* Yatayda küçük olsun */
+            .hero-title { font-size: 2rem; }
+            .poetic-text { font-size: 1.2rem; }
             
             #intro-layer {
                 flex-direction: row; 
                 gap: 20px;
                 padding: 0 40px;
             }
-
-            /* Sidebar'ı düzeltiyoruz */
+            
             #sidebar {
-                top: 0; 
-                bottom: 0; 
-                right: 0; 
-                left: auto; /* Solu serbest bırak */
+                /* Sağ tarafa yapışık panel */
+                top: 0; bottom: 0; right: 0; left: auto;
                 
-                width: 260px; /* Genişliği azalttık ki ekranı yemesin */
-                height: 100%; /* Tam boy */
+                width: 270px; /* Genişliği azalttık */
+                height: 100%; 
+                max-height: 100%;
                 
-                border-radius: 15px 0 0 15px;
-                max-height: 100vh;
-                
-                /* İçeriğin kaybolmaması için kaydırma çubuğu ekle */
-                overflow-y: auto; 
+                border-radius: 20px 0 0 20px;
+                border-right: none; border-top: none; border-bottom: none;
             }
-
-            /* Kapalıyken çok az yer kaplasın */
+            
             #sidebar.collapsed { 
-                width: 40px; 
+                width: 50px; 
                 height: 100%;
             }
             
             #sidebar.collapsed #sidebar-toggle-icon { transform: rotate(-90deg); }
             
-            /* Toggle ikonunu ortala */
-            .sidebar-header {
-                padding: 10px;
-            }
-            .sidebar-header h2 {
-                font-size: 0.9rem; /* Başlık sığsın */
-            }
+            /* İçerik kaydırılabilir olsun */
+            .sidebar-content { padding: 15px; }
         }
         
     
