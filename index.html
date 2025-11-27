@@ -248,16 +248,34 @@
         #gemini-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--ai-purple); border-radius: 16px; padding: 25px; z-index: 300; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3); backdrop-filter: blur(10px); color: #fff; font-size: 0.9rem; line-height: 1.6; }
         .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; color: #888; font-size: 1.2rem; }
 
-        /* --- RESPONSIVE  --- */
+       /* --- RESPONSIVE --- */
+        
         @media (max-width: 768px) {
-            /* (Portrait) Mod */
-            .hero-title { 
-                font-size: 2.5rem; 
-                line-height: 1.1; 
-                padding: 0 10px;
+            #intro-layer {
+                padding: 0 20px; 
+                text-align: center;
             }
-            .poetic-text { font-size: 1.5rem; }
-            .hero-subtitle { font-size: 0.8rem; margin-bottom: 2rem; }
+
+            .hero-title { 
+                font-size: 3rem; 
+                line-height: 1.1; 
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 100%;
+                word-wrap: break-word; 
+            }
+
+            .poetic-text { 
+                font-size: 1.5rem; 
+                margin-bottom: 0;
+            }
+
+            .hero-subtitle { 
+                font-size: 0.8rem; 
+                margin-top: 10px; 
+                margin-bottom: 2rem;
+                letter-spacing: 2px;
+            }
             
             #sidebar { 
                 top: auto; bottom: 0; left: 0; right: 0; 
@@ -266,16 +284,17 @@
                 max-height: 50vh; 
             }
             #sidebar.collapsed { height: 60px; } 
+            
             #gemini-modal { width: 90%; }
         }
 
-        /* (Landscape) Mod  */
+        
         @media (max-width: 900px) and (orientation: landscape) {
             .hero-title { font-size: 2rem; } 
-            
             #intro-layer {
                 flex-direction: row; 
                 gap: 20px;
+                align-items: center;
             }
             
             #sidebar {
@@ -1807,4 +1826,4 @@
     }
 </script>
 </body>
-</html>
+</html> 
