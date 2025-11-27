@@ -205,6 +205,15 @@
         /* ========================================= */
 
         @media (max-width: 768px) {
+
+            html, body {
+                background-attachment: scroll !important; 
+                background-position: center center !important;
+                background-size: cover !important;
+                /* Mobilde adres çubuğu sorunu olmasın diye yüksekliği sabitle */
+                height: 100vh; 
+                min-height: -webkit-fill-available;
+            }
             
             /* GİRİŞ EKRANI (NET GÖRÜNTÜ İÇİN) */
             #intro-layer {
